@@ -32,7 +32,20 @@
           </div>
           <div class="post-author">
             <span class="author-name">{{ post.authorName || post.displayName }}</span>
-            <span class="match-status" :class="{ matched: post.isMatched }">
+            <button 
+              v-if="isAuthenticated && userId === post.userId"
+              @click="togglePostStatus(post)"
+              class="match-status clickable" 
+              :class="{ matched: post.isMatched }"
+              :title="post.isMatched ? 'Click to mark as OPEN' : 'Click to mark as MATCHED'"
+            >
+              {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
+            </button>
+            <span 
+              v-else
+              class="match-status" 
+              :class="{ matched: post.isMatched }"
+            >
               {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
             </span>
           </div>
@@ -60,15 +73,16 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
-import { collection, query, orderBy, Timestamp, onSnapshot, addDoc, getDocs } from 'firebase/firestore'
+import { collection, query, orderBy, Timestamp, onSnapshot, addDoc, getDocs, doc, updateDoc } from 'firebase/firestore'
+import { useAuth } from '../composables/useAuth'
 
 interface Post {
   id: string;
   authorName: string;
   content: string;
   createdAt: any; // Firebase Timestamp
-  creator: any; // Reference
-  deviceId: string;
+  userId: string; // Google Auth UID
+  userEmail: string;
   displayName: string;
   genreString: string;
   isMatched: boolean;
@@ -83,6 +97,7 @@ export default defineComponent({
   setup() {
     const instance = getCurrentInstance()
     const db = instance?.appContext.config.globalProperties.$db
+    const { isAuthenticated, userId } = useAuth()
     const posts = ref<Post[]>([])
     const loading = ref(true)
     const error = ref<string | null>(null)
@@ -271,6 +286,25 @@ export default defineComponent({
       }
     }
 
+    const togglePostStatus = async (post: Post) => {
+      console.log('Toggling post status...')
+      if (!db) {
+        console.error('No database connection')
+        return
+      }
+
+      try {
+        const postRef = doc(db, 'posts', post.id)
+        const newStatus = !post.isMatched
+        await updateDoc(postRef, {
+          isMatched: newStatus
+        })
+        console.log(`Post status updated: ${post.id} is now ${newStatus ? 'MATCHED' : 'OPEN'}`)
+      } catch (err) {
+        console.error('Error toggling post status:', err)
+      }
+    }
+
     onMounted(() => {
       loadPosts()
     })
@@ -280,10 +314,13 @@ export default defineComponent({
       loading,
       error,
       formatTime,
+      isAuthenticated,
+      userId,
       testFirebase,
       createTestPost,
       loadPostsAlternative,
-      testSimpleRead
+      testSimpleRead,
+      togglePostStatus
     }
   }
 })
@@ -336,18 +373,39 @@ export default defineComponent({
 }
 
 .match-status {
-  color: var(--system-accent);
+  color: var(--lain-accent);
   font-size: 0.8rem;
   font-weight: bold;
   padding: 0.2rem 0.5rem;
-  border: 1px solid var(--system-accent);
+  border: 1px solid var(--lain-accent);
   background: transparent;
 }
 
 .match-status.matched {
-  color: var(--system-glitch);
-  border-color: var(--system-glitch);
+  color: var(--lain-glitch);
+  border-color: var(--lain-glitch);
   background: rgba(0, 255, 255, 0.1);
+}
+
+.match-status.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--lain-bg);
+  font-family: "Courier New", monospace;
+  text-transform: uppercase;
+}
+
+.match-status.clickable:hover {
+  background: var(--lain-accent);
+  color: var(--lain-bg);
+  box-shadow: 0 0 10px rgba(242, 242, 242, 0.5);
+  transform: translateY(-1px);
+}
+
+.match-status.clickable.matched:hover {
+  background: var(--lain-glitch);
+  color: var(--lain-bg);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 .post-details {
