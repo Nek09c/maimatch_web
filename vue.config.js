@@ -4,7 +4,7 @@ const path = require('path')
 module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
-  publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web2/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web/' : '/',
   
   // Configure the development server
   devServer: {
@@ -32,7 +32,7 @@ module.exports = defineConfig({
           loader: 'file-loader',
           options: {
             name: 'img/[name].[hash:8].[ext]',
-            publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web2/' : '/'
+            publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web/' : '/'
           }
         }
         return options
@@ -50,7 +50,7 @@ module.exports = defineConfig({
           }
         }
         // Configure base URL for assets
-        args[0].base = process.env.NODE_ENV === 'production' ? '/maimatch_web2/' : '/'
+        args[0].base = process.env.NODE_ENV === 'production' ? '/maimatch_web/' : '/'
         return args
       })
   },
