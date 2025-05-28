@@ -7,15 +7,64 @@
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
     <base href="<%= BASE_URL %>">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <script src="<%= BASE_URL %>provider-shield.js"></script>
     <title><%= htmlWebpackPlugin.options.title %></title>
     <script>
-      // Prevent extension conflicts
-      if (window.ethereum) {
-        delete window.ethereum;
-      }
-      if (window.web3) {
-        delete window.web3;
-      }
+      // Handle Web3 provider conflicts
+      (function() {
+        // Store original descriptor if it exists
+        const originalDescriptor = Object.getOwnPropertyDescriptor(window, 'ethereum');
+        
+        // Define a new property descriptor that prevents modifications
+        Object.defineProperty(window, 'ethereum', {
+          configurable: true,
+          set: function() {
+            // Allow the first set operation
+            if (!this._ethereumSet) {
+              delete this.ethereum;
+              this._ethereumSet = true;
+              return true;
+            }
+            return false;
+          },
+          get: function() {
+            return undefined;
+          }
+        });
+
+        // Same for web3
+        const originalWeb3Descriptor = Object.getOwnPropertyDescriptor(window, 'web3');
+        Object.defineProperty(window, 'web3', {
+          configurable: true,
+          set: function() {
+            if (!this._web3Set) {
+              delete this.web3;
+              this._web3Set = true;
+              return true;
+            }
+            return false;
+          },
+          get: function() {
+            return undefined;
+          }
+        });
+
+        // Clean up after page load
+        window.addEventListener('load', function() {
+          if (window.ethereum) {
+            Object.defineProperty(window, 'ethereum', {
+              configurable: true,
+              value: undefined
+            });
+          }
+          if (window.web3) {
+            Object.defineProperty(window, 'web3', {
+              configurable: true,
+              value: undefined
+            });
+          }
+        });
+      })();
     </script>
   </head>
   <body>
