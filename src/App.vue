@@ -14,7 +14,11 @@
           >LOCATIONS</router-link
         >
         <router-link to="/songs" class="cyber-button">SONGS</router-link>
+        <AuthComponent />
       </nav>
+      <div class="user-section">
+        <UserInfo />
+      </div>
     </header>
 
     <main class="content-area">
@@ -36,20 +40,30 @@
 import { defineComponent, onMounted } from "vue";
 import NewsTicker from './components/NewsTicker.vue';
 import ParticleTransition from './components/ParticleTransition.vue';
+import AuthComponent from './components/AuthComponent.vue';
+import { useAuth } from './composables/useAuth';
+import UserInfo from './components/UserInfo.vue';
 
 export default defineComponent({
   name: "App",
   components: {
     NewsTicker,
-    ParticleTransition
+    ParticleTransition,
+    AuthComponent,
+    UserInfo
   },
   setup() {
+    const { initializeAuth } = useAuth()
+    
     onMounted(() => {
       // Set background image after component mounts
       const backgroundElement = document.querySelector('.background-image') as HTMLElement;
       if (backgroundElement) {
         backgroundElement.style.backgroundImage = 'url(/maimatch_bg.JPG)';
       }
+      
+      // Initialize authentication
+      initializeAuth()
     });
 
     return {};
@@ -118,6 +132,8 @@ header {
   position: relative;
   box-shadow: 0 0 15px rgba(242, 242, 242, 0.3), 0 0 25px rgba(242, 242, 242, 0.1);
   transition: all 0.3s ease;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 header:hover {
@@ -168,6 +184,24 @@ header:hover::before {
 nav {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.user-section {
+  margin-left: auto;
+}
+
+/* Mobile responsive header */
+@media (max-width: 1024px) {
+  header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  nav {
+    justify-content: center;
+  }
 }
 
 .content-area {
@@ -327,12 +361,14 @@ h1:hover {
   color: var(--system-text);
   border: 1px solid var(--system-border);
   padding: 0.5rem 1rem;
+  margin: 0;
   font-family: "Courier New", monospace;
   text-transform: uppercase;
   cursor: pointer;
   position: relative;
   text-decoration: none;
   display: inline-block;
+  vertical-align: middle;
   text-shadow: 0 0 8px rgba(242, 242, 242, 0.5), 0 0 15px rgba(242, 242, 242, 0.3);
   box-shadow: 0 0 10px rgba(242, 242, 242, 0.2), 0 0 20px rgba(242, 242, 242, 0.1);
   transition: all 0.3s ease;

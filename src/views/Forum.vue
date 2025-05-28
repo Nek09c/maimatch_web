@@ -1,44 +1,115 @@
 <template>
   <div class="forum-container">
     <div class="cyber-box create-post">
-      <h3>CREATE NEW CONNECTION</h3>
-      <form @submit.prevent="createPost" class="post-form">
+      <h3>CREATE CONNECTION</h3>
+      
+      <!-- Authentication check -->
+      <div v-if="!isAuthenticated" class="auth-required">
+        <p class="glitch">⚠️ AUTHENTICATION REQUIRED</p>
+        <p>Please sign in with Google to create a post</p>
+      </div>
+      
+      <div v-else class="user-status">
+        <p class="posting-as">POSTING AS: <span class="glitch">{{ userDisplayName }}</span></p>
+      </div>
+      
+      <form @submit.prevent="createPost" class="post-form" :class="{ disabled: !isAuthenticated }">
         <div class="form-group">
-          <label>AUTHOR NAME</label>
-          <input type="text" v-model="newPost.authorName" required placeholder="ENTER YOUR NAME">
+          <label for="authorName">DISPLAY NAME (Optional)</label>
+          <input 
+            type="text" 
+            id="authorName"
+            v-model="newPost.authorName" 
+            :placeholder="userDisplayName"
+            :disabled="!isAuthenticated"
+            class="cyber-input"
+          />
         </div>
+        
         <div class="form-group">
-          <label>LOCATION</label>
-          <select v-model="newPost.location" required>
-            <option v-for="loc in locations" :key="loc" :value="loc">{{ loc }}</option>
+          <label for="location">LOCATION</label>
+          <select 
+            id="location"
+            v-model="newPost.location" 
+            required 
+            :disabled="!isAuthenticated"
+            class="cyber-input"
+          >
+            <option value="">SELECT ARCADE</option>
+            <option v-for="location in locations" :key="location" :value="location">
+              {{ location }}
+            </option>
           </select>
         </div>
+        
         <div class="form-group">
-          <label>TITLE</label>
-          <input type="text" v-model="newPost.title" required placeholder="ENTER POST TITLE">
+          <label for="title">TITLE</label>
+          <input 
+            type="text" 
+            id="title"
+            v-model="newPost.title" 
+            required 
+            :disabled="!isAuthenticated"
+            placeholder="Looking for partner..."
+            class="cyber-input"
+          />
         </div>
+        
         <div class="form-group">
-          <label>CONTENT</label>
-          <textarea v-model="newPost.content" required placeholder="ENTER YOUR MESSAGE"></textarea>
+          <label for="content">MESSAGE</label>
+          <textarea 
+            id="content"
+            v-model="newPost.content" 
+            required 
+            :disabled="!isAuthenticated"
+            placeholder="Describe what you're looking for..."
+            class="cyber-input"
+          ></textarea>
         </div>
+        
         <div class="form-group">
-          <label>GENRES</label>
-          <input type="text" v-model="newPost.genreString" placeholder="e.g., 東方project|Game & Variety|Maimai">
+          <label for="genreString">PREFERRED GENRES (Optional)</label>
+          <input 
+            type="text" 
+            id="genreString"
+            v-model="newPost.genreString" 
+            :disabled="!isAuthenticated"
+            placeholder="e.g., Pop, Anime, Game Music"
+            class="cyber-input"
+          />
         </div>
+        
         <div class="form-group">
-          <label>LEVELS</label>
-          <input type="text" v-model="newPost.levelString" placeholder="e.g., 10-12+">
+          <label for="levelString">SKILL LEVELS (Optional)</label>
+          <input 
+            type="text" 
+            id="levelString"
+            v-model="newPost.levelString" 
+            :disabled="!isAuthenticated"
+            placeholder="e.g., Master 10-12, Expert 8+"
+            class="cyber-input"
+          />
         </div>
+        
         <div class="form-group">
-          <label>SONG IDS</label>
-          <input type="text" v-model="newPost.songIdsString" placeholder="e.g., n_232,t_2,g_146,m_131">
+          <label for="songIdsString">SPECIFIC SONGS (Optional)</label>
+          <input 
+            type="text" 
+            id="songIdsString"
+            v-model="newPost.songIdsString" 
+            :disabled="!isAuthenticated"
+            placeholder="e.g., Ghost Rule, Senbonzakura"
+            class="cyber-input"
+          />
         </div>
-        <div class="form-group">
-          <label>DEVICE ID</label>
-          <input type="text" v-model="newPost.deviceId" readonly placeholder="Generating unique ID..." class="readonly-input">
-          <small style="color: var(--system-accent); font-size: 0.7rem;">Auto-generated unique identifier</small>
-        </div>
-        <button type="submit" class="cyber-button">TRANSMIT</button>
+        
+        <button 
+          type="submit" 
+          class="cyber-button submit-btn" 
+          :disabled="!isAuthenticated"
+        >
+          {{ isAuthenticated ? 'CREATE POST' : 'SIGN IN TO POST' }}
+        </button>
       </form>
     </div>
 
@@ -81,15 +152,17 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
-import { collection, addDoc, getDocs, query, orderBy, Timestamp, onSnapshot, where } from 'firebase/firestore'
+import { collection, addDoc, getDocs, query, orderBy, Timestamp, onSnapshot } from 'firebase/firestore'
+import { useAuth } from '../composables/useAuth'
+import { useUserProfile } from '../composables/useUserProfile'
 
 interface Post {
   id: string;
   authorName: string;
   content: string;
   createdAt: any; // Firebase Timestamp
-  creator: any; // Reference
-  deviceId: string;
+  userId: string; // Google Auth UID
+  userEmail: string;
   displayName: string;
   genreString: string;
   isMatched: boolean;
@@ -104,6 +177,9 @@ export default defineComponent({
   setup() {
     const instance = getCurrentInstance()
     const db = instance?.appContext.config.globalProperties.$db
+    const { isAuthenticated, userId, userDisplayName, userEmail } = useAuth()
+    const { incrementPostsCount } = useUserProfile()
+    
     const posts = ref<Post[]>([])
     const loading = ref(true)
     const error = ref<string | null>(null)
@@ -118,48 +194,6 @@ export default defineComponent({
       '灣仔金星'
     ]
 
-    const generateDeviceId = async () => {
-      const generateRandomId = () => {
-        return 'WEB-' + Math.random().toString(36).substr(2, 9).toUpperCase()
-      }
-
-      if (!db) {
-        console.warn('Database not available, generating random ID without duplicate check')
-        return generateRandomId()
-      }
-
-      let deviceId = generateRandomId()
-      let attempts = 0
-      const maxAttempts = 10
-
-      while (attempts < maxAttempts) {
-        try {
-          // Check if this deviceId already exists in the posts collection
-          const q = query(collection(db, 'posts'), where('deviceId', '==', deviceId))
-          const querySnapshot = await getDocs(q)
-          
-          if (querySnapshot.empty) {
-            // No duplicate found, this deviceId is unique
-            console.log('Generated unique deviceId:', deviceId)
-            return deviceId
-          } else {
-            // Duplicate found, generate a new one
-            console.log('Duplicate deviceId found, generating new one...')
-            deviceId = generateRandomId()
-            attempts++
-          }
-        } catch (error) {
-          console.error('Error checking deviceId uniqueness:', error)
-          // If there's an error checking, just return the current ID
-          return deviceId
-        }
-      }
-
-      // If we've tried too many times, just return the last generated ID
-      console.warn('Max attempts reached for unique deviceId generation, using:', deviceId)
-      return deviceId
-    }
-
     const newPost = ref({
       authorName: '',
       location: '',
@@ -169,9 +203,7 @@ export default defineComponent({
       genreString: '',
       levelString: '',
       songIdsString: '',
-      deviceId: '',
       isMatched: false,
-      creator: null,
       createdAt: Timestamp.now()
     })
 
@@ -241,17 +273,19 @@ export default defineComponent({
         return
       }
 
-      try {
-        // Generate a unique deviceId for this post
-        const uniqueDeviceId = await generateDeviceId()
+      if (!isAuthenticated.value) {
+        error.value = 'Please sign in to create a post'
+        return
+      }
 
+      try {
         const postData = {
-          authorName: newPost.value.authorName,
+          authorName: newPost.value.authorName || userDisplayName.value,
           content: newPost.value.content,
           createdAt: Timestamp.now(),
-          creator: null, // You might want to implement user references later
-          deviceId: uniqueDeviceId,
-          displayName: newPost.value.authorName, // Use authorName as displayName
+          userId: userId.value, // Use Google Auth UID
+          userEmail: userEmail.value,
+          displayName: newPost.value.authorName || userDisplayName.value,
           genreString: newPost.value.genreString || '',
           isMatched: false, // New posts start as unmatched
           levelString: newPost.value.levelString || '',
@@ -272,11 +306,12 @@ export default defineComponent({
           genreString: '',
           levelString: '',
           songIdsString: '',
-          deviceId: '',
           isMatched: false,
-          creator: null,
           createdAt: Timestamp.now()
         }
+
+        // Increment post count
+        await incrementPostsCount()
       } catch (err) {
         console.error('Error creating post:', err)
         error.value = 'Failed to create post'
@@ -285,28 +320,18 @@ export default defineComponent({
 
     onMounted(() => {
       loadPosts()
-      // Initialize a deviceId for the current session
-      initializeDeviceId()
     })
-
-    const initializeDeviceId = async () => {
-      try {
-        const deviceId = await generateDeviceId()
-        newPost.value.deviceId = deviceId
-      } catch (error) {
-        console.error('Error initializing deviceId:', error)
-        newPost.value.deviceId = 'WEB-' + Math.random().toString(36).substr(2, 9).toUpperCase()
-      }
-    }
 
     return {
       posts,
+      loading,
+      error,
       locations,
       newPost,
       createPost,
       formatTime,
-      loading,
-      error
+      isAuthenticated,
+      userDisplayName
     }
   }
 })
@@ -323,10 +348,42 @@ export default defineComponent({
   margin-bottom: 2rem;
 }
 
+.auth-required {
+  text-align: center;
+  padding: 1.5rem;
+  border: 1px solid var(--system-accent);
+  background: rgba(255, 0, 255, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.auth-required p:first-child {
+  color: var(--system-accent);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-status {
+  text-align: center;
+  padding: 0.75rem;
+  border: 1px solid var(--system-glitch);
+  background: rgba(0, 255, 255, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.posting-as {
+  color: var(--system-text);
+  font-size: 0.9rem;
+}
+
 .post-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.post-form.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .form-group {
@@ -459,5 +516,39 @@ textarea {
   color: var(--system-text);
   opacity: 0.9;
   flex: 1;
+}
+
+.cyber-input {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--system-bg);
+  border: 1px solid var(--system-border);
+  color: var(--system-text);
+  font-family: "Courier New", monospace;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--system-accent);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+.cyber-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--system-border);
+  color: var(--system-text);
+}
+
+.submit-btn:disabled:hover {
+  background: var(--system-border);
+  animation: none;
 }
 </style> 
