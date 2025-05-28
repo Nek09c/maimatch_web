@@ -19,7 +19,9 @@
 
     <main class="content-area">
       <div class="cyber-box">
-        <router-view></router-view>
+        <ParticleTransition>
+          <router-view :key="$route.fullPath"></router-view>
+        </ParticleTransition>
       </div>
     </main>
 
@@ -33,11 +35,13 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import NewsTicker from './components/NewsTicker.vue';
+import ParticleTransition from './components/ParticleTransition.vue';
 
 export default defineComponent({
   name: "App",
   components: {
-    NewsTicker
+    NewsTicker,
+    ParticleTransition
   },
   setup() {
     onMounted(() => {
