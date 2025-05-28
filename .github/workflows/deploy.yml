@@ -57,7 +57,7 @@ jobs:
 
   deploy:
     environment:
-      name: github-pages
+      name: maimatch_web_env
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
