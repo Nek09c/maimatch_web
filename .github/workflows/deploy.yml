@@ -30,12 +30,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Debug Secrets Presence
+        run: |
+          echo "Checking if secrets are set (will show true/false):"
+          echo "Has API_KEY: ${{ secrets.FIREBASE_API_KEY != '' }}"
+          echo "Has AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN != '' }}"
+          echo "Has PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID != '' }}"
+          echo "Has STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET != '' }}"
+          echo "Has MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID != '' }}"
+          echo "Has APP_ID: ${{ secrets.FIREBASE_APP_ID != '' }}"
+          echo "Has MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID != '' }}"
+
       - name: Create Firebase config
         run: |
           mkdir -p src
+          echo "Creating firebase-config.ts..."
           cat > src/firebase-config.ts << EOF
           // Firebase configuration for MaiMatch
-          // This file contains Firebase configuration logic
 
           export const firebaseConfig = {
             apiKey: "${{ secrets.FIREBASE_API_KEY }}",
@@ -47,17 +58,30 @@ jobs:
             measurementId: "${{ secrets.FIREBASE_MEASUREMENT_ID }}"
           };
 
-          // Add debug logging
-          console.log('Firebase Config Debug:', {
+          // Debug logging (safe - no sensitive data)
+          console.log('Firebase Config Status:', {
             hasApiKey: !!firebaseConfig.apiKey,
             hasProjectId: !!firebaseConfig.projectId,
             hasAuthDomain: !!firebaseConfig.authDomain,
-            projectId: firebaseConfig.projectId,
+            projectIdValue: firebaseConfig.projectId || 'NOT_SET'
           });
           EOF
 
+          echo "Verifying firebase-config.ts was created:"
+          ls -la src/firebase-config.ts
+
+          echo "Checking if projectId is set (will show true/false):"
+          grep -q "projectId: \"\"" src/firebase-config.ts && echo "false" || echo "true"
+
       - name: Build
         run: npm run build
+
+      - name: Verify Build Output
+        run: |
+          echo "Checking dist directory contents:"
+          ls -la dist
+          echo "Checking for main js file:"
+          ls -la dist/js/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
