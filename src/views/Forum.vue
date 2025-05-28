@@ -775,19 +775,39 @@ textarea {
   background: var(--system-bg);
   font-family: "Courier New", monospace;
   text-transform: uppercase;
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+.match-status.clickable::after {
+  content: '⇋';
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.8;
+  text-shadow: 0 0 8px var(--system-accent);
 }
 
 .match-status.clickable:hover {
   background: var(--system-accent);
   color: var(--system-bg);
-  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 
+              inset 0 0 5px rgba(255, 255, 255, 0.5);
   transform: translateY(-1px);
+  border-width: 2px;
+}
+
+.match-status.clickable.matched::after {
+  text-shadow: 0 0 8px var(--system-glitch);
 }
 
 .match-status.clickable.matched:hover {
   background: var(--system-glitch);
   color: var(--system-bg);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5),
+              inset 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .post-details {
