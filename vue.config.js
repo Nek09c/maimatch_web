@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
+const path = require('path')
 
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -14,6 +15,11 @@ module.exports = defineConfig({
 
   // Configure the build output
   chainWebpack: config => {
+    // Handle source files
+    config.resolve.alias
+      .set('@', path.resolve(__dirname, 'src'))
+      .set('src', path.resolve(__dirname, 'src'))
+
     // Handle static assets
     config.module
       .rule('images')
@@ -47,5 +53,19 @@ module.exports = defineConfig({
         args[0].base = process.env.NODE_ENV === 'production' ? '/maimatch_web2/' : '/'
         return args
       })
+  },
+
+  // Configure output directory
+  outputDir: 'dist',
+  assetsDir: '',
+  indexPath: 'index.html',
+
+  // Source maps in production for debugging
+  productionSourceMap: false,
+
+  // Configure TypeScript compilation
+  parallel: require('os').cpus().length > 1,
+  css: {
+    sourceMap: false
   }
 })

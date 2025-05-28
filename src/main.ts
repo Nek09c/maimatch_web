@@ -6,6 +6,10 @@ import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { firebaseConfig } from "./firebase-config";
+import { initializeExtensionShield } from "./utils/extension-shield";
+
+// Initialize extension protection
+initializeExtensionShield();
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
@@ -14,13 +18,13 @@ const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 // Create Vue app
-const vueApp = createApp(App);
+const app = createApp(App);
 
 // Make Firebase available globally
-vueApp.config.globalProperties.$firebase = firebaseApp;
-vueApp.config.globalProperties.$db = db;
-vueApp.config.globalProperties.$auth = auth;
+app.config.globalProperties.$firebase = firebaseApp;
+app.config.globalProperties.$db = db;
+app.config.globalProperties.$auth = auth;
 
 // Use router and mount app
-vueApp.use(router);
-vueApp.mount("#app");
+app.use(router);
+app.mount("#app");
