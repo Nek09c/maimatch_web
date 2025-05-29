@@ -23,20 +23,24 @@ module.exports = defineConfig({
     // Handle static assets
     config.module
       .rule('images')
+      .test(/\.(png|jpe?g|gif|webp|avif|PNG)$/i)
       .use('url-loader')
       .loader('url-loader')
       .tap(options => {
         options = options || {}
         options.limit = 4096
+        options.esModule = false
         options.fallback = {
           loader: 'file-loader',
           options: {
             name: 'img/[name].[hash:8].[ext]',
+            esModule: false,
             publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web/' : '/'
           }
         }
         return options
       })
+      .end()
 
     // Configure HTML plugin
     config
