@@ -1,58 +1,61 @@
 <template>
-  <div class="home-container">
-    <div class="terminal-text">
-      <h2>WELCOME TO MAIMATCH</h2>
-      <p>CONNECTING MAIMAI PLAYERS ACROSS HONG KONG</p>
-    </div>
+  <div>
+    <LoadingScreen v-if="!isLoadingComplete" @loading-complete="onLoadingComplete" />
+    <div class="home-container" :class="{ 'content-loaded': isLoadingComplete }">
+      <div class="terminal-text">
+        <h2>WELCOME TO MAIMATCH</h2>
+        <p>CONNECTING MAIMAI PLAYERS ACROSS HONG KONG</p>
+      </div>
 
-    <div class="cyber-box stats-container">
-      <h3>SYSTEM STATUS</h3>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-label">TOTAL SONGS PLAYED</span>
-          <span class="stat-value glitch">{{ totalSongsPlayed }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">TOTAL POSTS</span>
-          <span class="stat-value glitch">{{ totalPosts }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">ARCADE LOCATIONS</span>
-          <span class="stat-value glitch">{{ arcadeLocations }}</span>
+      <div class="cyber-box stats-container">
+        <h3>SYSTEM STATUS</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">TOTAL SONGS PLAYED</span>
+            <span class="stat-value glitch">{{ totalSongsPlayed }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TOTAL POSTS</span>
+            <span class="stat-value glitch">{{ totalPosts }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">ARCADE LOCATIONS</span>
+            <span class="stat-value glitch">{{ arcadeLocations }}</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="cyber-box recent-posts">
-      <h3>RECENT CONNECTIONS</h3>
-      <div v-if="recentPosts.length === 0" class="no-recent-posts">
-        <p>No recent connections in the last hour</p>
-        <p style="font-size: 0.8rem; opacity: 0.7;">Check back later or create a new post!</p>
+      <div class="cyber-box recent-posts">
+        <h3>RECENT CONNECTIONS</h3>
+        <div v-if="recentPosts.length === 0" class="no-recent-posts">
+          <p>No recent connections in the last hour</p>
+          <p style="font-size: 0.8rem; opacity: 0.7;">Check back later or create a new post!</p>
+        </div>
+        <div v-else v-for="post in recentPosts" :key="post.id" class="post-item">
+          <span class="post-location">{{ post.location }}</span>
+          <span class="post-title">{{ post.title }}</span>
+          <span class="post-author">{{ post.authorName }}</span>
+          <span class="post-time">{{ post.time }}</span>
+        </div>
       </div>
-      <div v-else v-for="post in recentPosts" :key="post.id" class="post-item">
-        <span class="post-location">{{ post.location }}</span>
-        <span class="post-title">{{ post.title }}</span>
-        <span class="post-author">{{ post.authorName }}</span>
-        <span class="post-time">{{ post.time }}</span>
+
+      <!-- CC Character Image -->
+      <div class="cc-character">
+        <img 
+          :src="getImageUrl('maimatch_CC.PNG')" 
+          alt="CC Character" 
+          class="cc-image"
+        />
       </div>
-    </div>
 
-    <!-- CC Character Image -->
-    <div class="cc-character">
-      <img 
-        :src="getImageUrl('maimatch_CC.PNG')" 
-        alt="CC Character" 
-        class="cc-image"
-      />
-    </div>
-
-    <!-- Lain Character Image -->
-    <div class="lain-character">
-      <img 
-        :src="getImageUrl('maimatch_lain.PNG')" 
-        alt="Lain Character" 
-        class="lain-image"
-      />
+      <!-- Lain Character Image -->
+      <div class="lain-character">
+        <img 
+          :src="getImageUrl('maimatch_lain.PNG')" 
+          alt="Lain Character" 
+          class="lain-image"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -60,6 +63,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, getCurrentInstance } from "vue";
 import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore'
+import LoadingScreen from './LoadingScreen.vue'
 
 interface RecentPost {
   id: string;
@@ -71,11 +75,19 @@ interface RecentPost {
 
 export default defineComponent({
   name: "Home",
+  components: {
+    LoadingScreen
+  },
   setup() {
+    const isLoadingComplete = ref(false)
     const totalSongsPlayed = ref(0);
     const totalPosts = ref(0);
     const arcadeLocations = ref(8);
     const recentPosts = ref<RecentPost[]>([]);
+
+    const onLoadingComplete = () => {
+      isLoadingComplete.value = true
+    }
 
     const getImageUrl = (imageName: string) => {
       const baseUrl = process.env.NODE_ENV === 'production' ? '/maimatch_web' : '';
@@ -222,6 +234,8 @@ export default defineComponent({
     })
 
     return {
+      isLoadingComplete,
+      onLoadingComplete,
       totalSongsPlayed,
       totalPosts,
       arcadeLocations,
@@ -241,6 +255,14 @@ export default defineComponent({
   position: relative;
   min-height: 70vh;
   background: transparent;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.content-loaded {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .stats-container {
