@@ -3,23 +3,6 @@
     <div class="cyber-box">
       <h2 class="glitch">ALL CONNECTIONS</h2>
       
-      <!-- Debug info -->
-      <div style="color: #ff00ff; font-size: 0.8rem; margin-bottom: 1rem;">
-        DEBUG: Loading: {{ loading }}, Error: {{ error }}, Posts count: {{ posts.length }}
-        <button @click="testFirebase" style="margin-left: 1rem; background: #ff00ff; color: #000; padding: 0.25rem 0.5rem;">
-          Test Firebase
-        </button>
-        <button @click="createTestPost" style="margin-left: 0.5rem; background: #00ffff; color: #000; padding: 0.25rem 0.5rem;">
-          Create Test Post
-        </button>
-        <button @click="loadPostsAlternative" style="margin-left: 0.5rem; background: #00ff00; color: #000; padding: 0.25rem 0.5rem;">
-          Load Posts (getDocs)
-        </button>
-        <button @click="testSimpleRead" style="margin-left: 0.5rem; background: #ffff00; color: #000; padding: 0.25rem 0.5rem;">
-          Test Simple Read
-        </button>
-      </div>
-      
       <div v-if="loading" class="loading">LOADING CONNECTIONS...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
       <div v-else-if="posts.length === 0" class="no-posts">NO CONNECTIONS FOUND</div>
@@ -128,39 +111,8 @@ export default defineComponent({
       return 'just now'
     }
 
-    const testFirebase = () => {
-      console.log('Testing Firebase connection...')
-      console.log('db:', db)
-      console.log('instance:', instance)
-      console.log('globalProperties:', instance?.appContext.config.globalProperties)
-    }
-
-    const createTestPost = async () => {
-      console.log('Creating test post...')
-      if (!db) {
-        console.error('No database connection')
-        return
-      }
-
-      try {
-        const testPost = {
-          location: '旺角新之城',
-          title: 'Test Post',
-          content: 'This is a test post created from AllPosts component',
-          createdAt: Timestamp.now()
-        }
-        
-        console.log('Adding test post:', testPost)
-        const docRef = await addDoc(collection(db, 'posts'), testPost)
-        console.log('Test post created with ID:', docRef.id)
-      } catch (err) {
-        console.error('Error creating test post:', err)
-      }
-    }
-
     const loadPosts = async () => {
       console.log('AllPosts: Starting to load posts...')
-      console.log('AllPosts: db instance:', db)
       
       if (!db) {
         console.error('AllPosts: Firestore not initialized')
@@ -170,41 +122,23 @@ export default defineComponent({
       }
 
       try {
-        console.log('AllPosts: Setting up query...')
         const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
-        console.log('AllPosts: Query created:', q)
         
         // Set up real-time listener
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          console.log('AllPosts: Received snapshot with', querySnapshot.docs.length, 'documents')
-          console.log('AllPosts: Snapshot metadata:', querySnapshot.metadata)
-          console.log('AllPosts: Snapshot empty:', querySnapshot.empty)
-          
-          if (querySnapshot.empty) {
-            console.log('AllPosts: No documents found in collection')
-          }
-          
-          posts.value = querySnapshot.docs.map(doc => {
-            const data = doc.data()
-            console.log('AllPosts: Document data:', doc.id, data)
-            return {
-              id: doc.id,
-              ...data
-            }
-          }) as Post[]
-          console.log('AllPosts: Final posts array:', posts.value)
+          posts.value = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Post[]
           loading.value = false
         }, (err) => {
           console.error('AllPosts: Error loading posts:', err)
-          console.error('AllPosts: Error code:', err.code)
-          console.error('AllPosts: Error message:', err.message)
           error.value = `Failed to load posts: ${err instanceof Error ? err.message : 'Unknown error'}`
           loading.value = false
         })
 
         // Clean up listener when component is unmounted
         onUnmounted(() => {
-          console.log('AllPosts: Cleaning up listener')
           unsubscribe()
         })
       } catch (err) {
@@ -214,80 +148,7 @@ export default defineComponent({
       }
     }
 
-    const loadPostsAlternative = async () => {
-      console.log('AllPosts: Starting to load posts using getDocs...')
-      console.log('AllPosts: db instance:', db)
-      
-      if (!db) {
-        console.error('AllPosts: Firestore not initialized')
-        error.value = 'Firestore not initialized'
-        loading.value = false
-        return
-      }
-
-      try {
-        console.log('AllPosts: Setting up query...')
-        const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
-        
-        const docs = await getDocs(q)
-        posts.value = docs.docs.map(doc => {
-          console.log('AllPosts: Document data:', doc.id, doc.data())
-          return {
-            id: doc.id,
-            ...doc.data()
-          }
-        }) as Post[]
-        console.log('AllPosts: Final posts array:', posts.value)
-        loading.value = false
-      } catch (err) {
-        console.error('AllPosts: Error setting up posts listener:', err)
-        error.value = `Failed to load posts: ${err instanceof Error ? err.message : 'Unknown error'}`
-        loading.value = false
-      }
-    }
-
-    const testSimpleRead = async () => {
-      console.log('Testing simple read...')
-      console.log('db:', db)
-      
-      if (!db) {
-        console.error('No database connection')
-        return
-      }
-
-      try {
-        // Test simple collection access without ordering
-        console.log('Testing collection access...')
-        const simpleQuery = collection(db, 'posts')
-        console.log('Collection reference:', simpleQuery)
-        
-        const snapshot = await getDocs(simpleQuery)
-        console.log('Simple read - snapshot size:', snapshot.size)
-        console.log('Simple read - snapshot empty:', snapshot.empty)
-        
-        snapshot.forEach((doc) => {
-          console.log('Simple read - doc:', doc.id, doc.data())
-        })
-        
-        // Test with onSnapshot without ordering
-        console.log('Testing onSnapshot without ordering...')
-        const unsubscribe = onSnapshot(simpleQuery, (querySnapshot) => {
-          console.log('Simple onSnapshot - received', querySnapshot.docs.length, 'documents')
-          querySnapshot.forEach((doc) => {
-            console.log('Simple onSnapshot - doc:', doc.id, doc.data())
-          })
-          unsubscribe() // Clean up immediately
-        }, (error) => {
-          console.error('Simple onSnapshot error:', error)
-        })
-        
-      } catch (err) {
-        console.error('Error in simple read test:', err)
-      }
-    }
-
     const togglePostStatus = async (post: Post) => {
-      console.log('Toggling post status...')
       if (!db) {
         console.error('No database connection')
         return
@@ -299,7 +160,6 @@ export default defineComponent({
         await updateDoc(postRef, {
           isMatched: newStatus
         })
-        console.log(`Post status updated: ${post.id} is now ${newStatus ? 'MATCHED' : 'OPEN'}`)
       } catch (err) {
         console.error('Error toggling post status:', err)
       }
@@ -316,10 +176,6 @@ export default defineComponent({
       formatTime,
       isAuthenticated,
       userId,
-      testFirebase,
-      createTestPost,
-      loadPostsAlternative,
-      testSimpleRead,
       togglePostStatus
     }
   }
