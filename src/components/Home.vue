@@ -357,6 +357,26 @@ export default defineComponent({
   opacity: 0.45;
 }
 
+/* Mobile responsive styles for CC character */
+@media screen and (max-width: 768px) {
+  .cc-character {
+    width: 200px;  /* Half the original width */
+    height: 250px; /* Half the original height */
+    bottom: 10px;
+    left: 10px;
+  }
+}
+
+/* Even smaller screens */
+@media screen and (max-width: 480px) {
+  .cc-character {
+    width: 150px;  /* Further reduced for very small screens */
+    height: 187.5px;
+    bottom: 5px;
+    left: 5px;
+  }
+}
+
 .cc-character:hover {
   animation: ccGlow 0.6s ease-in-out infinite;
 }
@@ -398,6 +418,26 @@ export default defineComponent({
   pointer-events: none;
   transition: all 0.3s ease;
   opacity: 0.45;
+}
+
+/* Mobile responsive styles for Lain character */
+@media screen and (max-width: 768px) {
+  .lain-character {
+    width: 200px;  /* Half the original width */
+    height: 250px; /* Half the original height */
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+/* Even smaller screens */
+@media screen and (max-width: 480px) {
+  .lain-character {
+    width: 150px;  /* Further reduced for very small screens */
+    height: 187.5px;
+    bottom: 5px;
+    right: 5px;
+  }
 }
 
 .lain-character:hover {
