@@ -55,11 +55,16 @@ export default defineComponent({
   setup() {
     const { initializeAuth } = useAuth()
     
+    const getImageUrl = (imageName: string) => {
+      const baseUrl = process.env.NODE_ENV === 'production' ? '/maimatch_web' : '';
+      return `${baseUrl}/${imageName}`;
+    };
+    
     onMounted(() => {
       // Set background image after component mounts
       const backgroundElement = document.querySelector('.background-image') as HTMLElement;
       if (backgroundElement) {
-        backgroundElement.style.backgroundImage = 'url(/maimatch_bg.JPG)';
+        backgroundElement.style.backgroundImage = `url(${getImageUrl('maimatch_bg.JPG')})`;
       }
       
       // Initialize authentication
