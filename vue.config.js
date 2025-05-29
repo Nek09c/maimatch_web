@@ -13,34 +13,23 @@ module.exports = defineConfig({
     }
   },
 
-  // Configure the build output
+  // Configure webpack
   chainWebpack: config => {
     // Handle source files
     config.resolve.alias
       .set('@', path.resolve(__dirname, 'src'))
       .set('src', path.resolve(__dirname, 'src'))
 
-    // Handle static assets
+    // Configure image handling
     config.module
       .rule('images')
-      .test(/\.(png|jpe?g|gif|webp|avif|PNG)$/i)
-      .use('url-loader')
-      .loader('url-loader')
-      .tap(options => {
-        options = options || {}
-        options.limit = 4096
-        options.esModule = false
-        options.fallback = {
-          loader: 'file-loader',
-          options: {
-            name: 'img/[name].[hash:8].[ext]',
-            esModule: false,
-            publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web/' : '/'
-          }
-        }
-        return options
-      })
-      .end()
+      .test(/\.(png|jpe?g|gif|PNG)$/i)
+      .use('file-loader')
+        .loader('file-loader')
+        .options({
+          name: 'img/[name].[hash:8].[ext]'
+        })
+        .end()
 
     // Configure HTML plugin
     config

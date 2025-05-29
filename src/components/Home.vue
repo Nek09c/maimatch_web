@@ -40,7 +40,7 @@
     <!-- CC Character Image -->
     <div class="cc-character">
       <img 
-        src="../assets/maimatch_CC.PNG" 
+        :src="'/maimatch_CC.PNG'" 
         alt="CC Character" 
         class="cc-image"
       />
@@ -49,7 +49,7 @@
     <!-- Lain Character Image -->
     <div class="lain-character">
       <img 
-        src="../assets/maimatch_lain.PNG" 
+        :src="'/maimatch_lain.PNG'" 
         alt="Lain Character" 
         class="lain-image"
       />
