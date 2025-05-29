@@ -9,7 +9,7 @@ module.exports = defineConfig({
   // Configure the development server
   devServer: {
     headers: {
-      'Content-Security-Policy': "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+      'Content-Security-Policy': "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-src 'self' *.firebaseapp.com *.firebase.com; connect-src 'self' *.firebaseio.com *.firebase.com wss://*.firebaseio.com;"
     }
   },
 
@@ -46,7 +46,7 @@ module.exports = defineConfig({
           ...args[0].meta,
           'Content-Security-Policy': {
             'http-equiv': 'Content-Security-Policy',
-            content: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+            content: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-src 'self' *.firebaseapp.com *.firebase.com; connect-src 'self' *.firebaseio.com *.firebase.com wss://*.firebaseio.com;"
           }
         }
         // Configure base URL for assets

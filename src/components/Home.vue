@@ -49,7 +49,7 @@
     <!-- Lain Character Image -->
     <div class="lain-character">
       <img 
-        src="/maimtch_lain.PNG" 
+        src="/maimatch_lain.PNG" 
         alt="Lain Character" 
         class="lain-image"
       />

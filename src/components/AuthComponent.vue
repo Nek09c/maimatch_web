@@ -4,8 +4,13 @@
     <span class="glitch">AUTHENTICATING...</span>
   </div>
   
+  <!-- Error state -->
+  <div v-if="error" class="auth-error">
+    {{ error }}
+  </div>
+  
   <!-- Not authenticated -->
-  <button v-else-if="!isAuthenticated" @click="handleGoogleSignIn" class="cyber-button glitch" :disabled="isLoading">
+  <button v-if="!isAuthenticated" @click="handleGoogleSignIn" class="cyber-button glitch" :disabled="isLoading">
     CONNECT (LOGIN)
   </button>
   
@@ -16,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useUserProfile } from '../composables/useUserProfile'
 
@@ -32,16 +37,20 @@ export default defineComponent({
       userPhotoURL,
       userId,
       signInWithGoogle,
-      signOutUser
+      signOutUser,
+      initializeAuth
     } = useAuth()
 
     const { createOrUpdateProfile } = useUserProfile()
 
     const handleGoogleSignIn = async () => {
       try {
+        console.log('Starting Google sign in...');
         await signInWithGoogle()
+        console.log('Google sign in successful, creating/updating profile...');
         // Create or update user profile after successful sign in
         await createOrUpdateProfile()
+        console.log('Profile updated successfully');
       } catch (err) {
         console.error('Sign in failed:', err)
       }
@@ -54,6 +63,11 @@ export default defineComponent({
         console.error('Sign out failed:', err)
       }
     }
+
+    // Initialize auth on component mount
+    onMounted(() => {
+      initializeAuth()
+    })
 
     return {
       isAuthenticated,
@@ -74,6 +88,17 @@ export default defineComponent({
 .auth-loading {
   text-align: center;
   padding: 1rem;
+}
+
+.auth-error {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid #ff0000;
+  color: #ff0000;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 button.cyber-button {
@@ -141,15 +166,6 @@ button.cyber-button:disabled:hover {
     box-shadow: 0 0 15px rgba(242, 242, 242, 0.6), inset 0 0 10px rgba(242, 242, 242, 0.3), 0 0 25px rgba(242, 242, 242, 0.3);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   }
-}
-
-.auth-error {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: rgba(255, 0, 0, 0.1);
-  border: 1px solid #ff0000;
-  color: #ff0000;
-  font-size: 0.9rem;
 }
 
 .user-info {

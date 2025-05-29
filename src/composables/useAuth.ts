@@ -53,11 +53,34 @@ export function useAuth() {
       isLoading.value = true;
 
       const provider = new GoogleAuthProvider();
-      // Optional: Add scopes if needed
+      // Add scopes
       provider.addScope("email");
       provider.addScope("profile");
 
-      const result = await signInWithPopup(auth, provider);
+      // Configure custom parameters for the auth provider
+      provider.setCustomParameters({
+        prompt: "select_account",
+        // Handle GitHub Pages subdirectory
+        redirect_uri:
+          window.location.origin +
+          (process.env.NODE_ENV === "production" ? "/maimatch_web/" : "/"),
+      });
+
+      const result = await signInWithPopup(auth, provider).catch((error) => {
+        // Handle specific error cases
+        if (error.code === "auth/popup-blocked") {
+          console.error("Popup was blocked by the browser");
+          error.value = "Please allow popups for this site to login";
+          throw error;
+        }
+        if (error.code === "auth/popup-closed-by-user") {
+          console.error("Popup was closed by the user");
+          error.value = "Login cancelled";
+          throw error;
+        }
+        throw error;
+      });
+
       const user = result.user;
 
       console.log("Google sign-in successful:", {
