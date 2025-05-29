@@ -1,5 +1,16 @@
 <template>
-  <div class="home-container">
+  <!-- Entrance animation overlay -->
+  <div class="entrance-animation" :class="{ 'animation-complete': animationComplete }">
+    <div class="loading-container">
+      <div class="pixel-loading-bar">
+        <div class="pixel-progress"></div>
+      </div>
+      <div class="loading-text">SYSTEM LOADING...</div>
+    </div>
+    <div class="flash-overlay"></div>
+  </div>
+
+  <div class="home-container" :class="{ 'show-content': animationComplete }">
     <div class="terminal-text">
       <h2>WELCOME TO MAIMATCH</h2>
       <p>CONNECTING MAIMAI PLAYERS ACROSS HONG KONG</p>
@@ -76,6 +87,7 @@ export default defineComponent({
     const totalPosts = ref(0);
     const arcadeLocations = ref(8);
     const recentPosts = ref<RecentPost[]>([]);
+    const animationComplete = ref(false)
 
     const getImageUrl = (imageName: string) => {
       const baseUrl = process.env.NODE_ENV === 'production' ? '/maimatch_web' : '';
@@ -217,6 +229,11 @@ export default defineComponent({
     }
 
     onMounted(() => {
+      // Trigger the animation sequence
+      setTimeout(() => {
+        animationComplete.value = true
+      }, 1800) // Show content at exactly 2 seconds
+
       loadStats()
       loadRecentPosts()
     })
@@ -227,20 +244,179 @@ export default defineComponent({
       arcadeLocations,
       recentPosts,
       formatTime,
-      getImageUrl
+      getImageUrl,
+      animationComplete,
     };
   },
 });
 </script>
 
 <style scoped>
+/* Entrance Animation Styles */
+.entrance-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 9999;
+  transition: background-color 0.5s ease 2s;
+  pointer-events: none;
+}
+
+.loading-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.pixel-loading-bar {
+  width: 100%;
+  height: 20px;
+  background: #111;
+  border: 2px solid var(--lain-accent);
+  position: relative;
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px var(--lain-accent),
+              inset 0 0 5px var(--lain-accent);
+  animation: neonPulse 1.5s ease-in-out infinite;
+}
+
+.pixel-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--lain-accent),
+    var(--lain-accent) 10px,
+    var(--lain-glitch) 10px,
+    var(--lain-glitch) 20px
+  );
+  width: 0%;
+  animation: progress 1.8s ease-out forwards,
+             pixelate 0.2s steps(10) infinite;
+  box-shadow: 0 0 15px var(--lain-accent),
+              0 0 25px var(--lain-glitch);
+}
+
+.loading-text {
+  color: var(--lain-accent);
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  letter-spacing: 2px;
+  animation: blink 0.5s steps(1) infinite,
+             textGlow 1.5s ease-in-out infinite;
+  text-shadow: 0 0 5px var(--lain-accent),
+               0 0 10px var(--lain-accent),
+               0 0 15px var(--lain-accent);
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes pixelate {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 0;
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--lain-accent),
+                inset 0 0 5px var(--lain-accent);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--lain-accent),
+                0 0 30px var(--lain-glitch),
+                inset 0 0 10px var(--lain-accent);
+  }
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 5px var(--lain-accent),
+                 0 0 10px var(--lain-accent);
+  }
+  50% {
+    text-shadow: 0 0 10px var(--lain-accent),
+                 0 0 20px var(--lain-accent),
+                 0 0 30px var(--lain-glitch);
+  }
+}
+
+.entrance-animation.animation-complete {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.entrance-animation.animation-complete .loading-container {
+  opacity: 0;
+}
+
+.flash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0;
+  animation: flash 0.5s ease-out 1.8s forwards;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .home-container {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  visibility: hidden;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   position: relative;
   min-height: 70vh;
   background: transparent;
+}
+
+.home-container.show-content {
+  opacity: 1;
+  visibility: visible;
 }
 
 .stats-container {
