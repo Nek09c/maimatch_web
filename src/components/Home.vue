@@ -1,6 +1,25 @@
 <template>
   <div>
     <LoadingScreen v-if="!isLoadingComplete" @loading-complete="onLoadingComplete" />
+    
+    <!-- CC Character Image -->
+    <div class="cc-character">
+      <img 
+        :src="getImageUrl('maimatch_CC.PNG')" 
+        alt="CC Character" 
+        class="cc-image"
+      />
+    </div>
+
+    <!-- Lain Character Image -->
+    <div class="lain-character">
+      <img 
+        :src="getImageUrl('maimatch_lain.PNG')" 
+        alt="Lain Character" 
+        class="lain-image"
+      />
+    </div>
+
     <div class="home-container" :class="{ 'content-loaded': isLoadingComplete }">
       <div class="terminal-text">
         <h2>WELCOME TO MAIMATCH</h2>
@@ -37,24 +56,6 @@
           <span class="post-author">{{ post.authorName }}</span>
           <span class="post-time">{{ post.time }}</span>
         </div>
-      </div>
-
-      <!-- CC Character Image -->
-      <div class="cc-character">
-        <img 
-          :src="getImageUrl('maimatch_CC.PNG')" 
-          alt="CC Character" 
-          class="cc-image"
-        />
-      </div>
-
-      <!-- Lain Character Image -->
-      <div class="lain-character">
-        <img 
-          :src="getImageUrl('maimatch_lain.PNG')" 
-          alt="Lain Character" 
-          class="lain-image"
-        />
       </div>
     </div>
   </div>
