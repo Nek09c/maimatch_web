@@ -112,10 +112,7 @@ export default defineComponent({
     }
 
     const loadPosts = async () => {
-      console.log('AllPosts: Starting to load posts...')
-      
       if (!db) {
-        console.error('AllPosts: Firestore not initialized')
         error.value = 'Firestore not initialized'
         loading.value = false
         return
@@ -132,23 +129,19 @@ export default defineComponent({
           })) as Post[]
           loading.value = false
         }, (err) => {
-          console.error('AllPosts: Error loading posts:', err)
-          error.value = `Failed to load posts: ${err instanceof Error ? err.message : 'Unknown error'}`
+          error.value = 'Error loading posts: ' + err.message
           loading.value = false
         })
 
-        // Clean up listener when component is unmounted
-        onUnmounted(() => {
-          unsubscribe()
-        })
-      } catch (err) {
-        console.error('AllPosts: Error setting up posts listener:', err)
-        error.value = `Failed to load posts: ${err instanceof Error ? err.message : 'Unknown error'}`
+        return unsubscribe
+      } catch (err: any) {
+        error.value = 'Error setting up posts listener: ' + err.message
         loading.value = false
       }
     }
 
     const togglePostStatus = async (post: Post) => {
+      console.log('Toggling post status...')
       if (!db) {
         console.error('No database connection')
         return
@@ -160,6 +153,7 @@ export default defineComponent({
         await updateDoc(postRef, {
           isMatched: newStatus
         })
+        console.log(`Post status updated: ${post.id} is now ${newStatus ? 'MATCHED' : 'OPEN'}`)
       } catch (err) {
         console.error('Error toggling post status:', err)
       }
