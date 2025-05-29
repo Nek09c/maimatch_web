@@ -40,7 +40,7 @@
     <!-- CC Character Image -->
     <div class="cc-character">
       <img 
-        :src="'/maimatch_CC.PNG'" 
+        :src="getImageUrl('maimatch_CC.PNG')" 
         alt="CC Character" 
         class="cc-image"
       />
@@ -49,7 +49,7 @@
     <!-- Lain Character Image -->
     <div class="lain-character">
       <img 
-        :src="'/maimatch_lain.PNG'" 
+        :src="getImageUrl('maimatch_lain.PNG')" 
         alt="Lain Character" 
         class="lain-image"
       />
@@ -76,6 +76,11 @@ export default defineComponent({
     const totalPosts = ref(0);
     const arcadeLocations = ref(8);
     const recentPosts = ref<RecentPost[]>([]);
+
+    const getImageUrl = (imageName: string) => {
+      const baseUrl = process.env.NODE_ENV === 'production' ? '/maimatch_web' : '';
+      return `${baseUrl}/${imageName}`;
+    };
 
     const formatTime = (createdAt: any) => {
       if (!createdAt) return 'Unknown time'
@@ -221,7 +226,8 @@ export default defineComponent({
       totalPosts,
       arcadeLocations,
       recentPosts,
-      formatTime
+      formatTime,
+      getImageUrl
     };
   },
 });

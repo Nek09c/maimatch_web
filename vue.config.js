@@ -27,7 +27,9 @@ module.exports = defineConfig({
       .use('file-loader')
         .loader('file-loader')
         .options({
-          name: 'img/[name].[hash:8].[ext]'
+          name: '[name].[ext]',
+          outputPath: '',
+          publicPath: process.env.NODE_ENV === 'production' ? '/maimatch_web/' : '/'
         })
         .end()
 
