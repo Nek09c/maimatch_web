@@ -19,10 +19,14 @@
           <input 
             type="text" 
             id="authorName"
-            v-model="newPost.authorName" 
-            :placeholder="userDisplayName"
+            ref="inputElement"
+            :value="inputValue"
+            @keydown="handleKeyPress"
+            @paste="handlePaste"
             :disabled="!isAuthenticated"
             class="cyber-input"
+            autocomplete="off"
+            spellcheck="false"
           />
         </div>
         
@@ -180,13 +184,13 @@
           <span class="post-time">{{ formatTime(post.createdAt) }}</span>
         </div>
         <div class="post-author">
-          <span class="author-name">{{ post.authorName || post.displayName }}</span>
+          <span class="author-name">{{ post.authorName }}</span>
           <button 
             v-if="isAuthenticated && userId === post.userId"
             @click="togglePostStatus(post)"
             class="match-status clickable" 
             :class="{ matched: post.isMatched }"
-            :title="post.isMatched ? 'Click to mark as OPEN' : 'Click to mark as MATCHED'"
+            :title="post.isMatched ? 'Click to mark as CLOSE' : 'Click to mark as MATCHED'"
           >
             {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
           </button>
@@ -220,10 +224,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance, computed, watch } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance, computed, watch, nextTick } from 'vue'
 import { collection, addDoc, getDocs, query, orderBy, Timestamp, onSnapshot, doc, updateDoc } from 'firebase/firestore'
 import { useAuth } from '../composables/useAuth'
 import { useUserProfile } from '../composables/useUserProfile'
+import { useRouter } from 'vue-router'
 
 interface Post {
   id: string;
@@ -250,6 +255,7 @@ interface Song {
 export default defineComponent({
   name: 'Forum',
   setup() {
+    const router = useRouter()
     const instance = getCurrentInstance()
     const db = instance?.appContext.config.globalProperties.$db
     const { isAuthenticated, userId, userDisplayName, userEmail } = useAuth()
@@ -428,6 +434,44 @@ export default defineComponent({
       createdAt: Timestamp.now()
     })
 
+    const customAuthorNameInput = ref('')
+    const inputValue = ref('')
+    const inputElement = ref<HTMLInputElement | null>(null)
+
+    const updateValue = (value: string) => {
+      inputValue.value = value
+      customAuthorNameInput.value = value
+      newPost.value.authorName = value
+      
+      // Force update the DOM element
+      nextTick(() => {
+        if (inputElement.value) {
+          inputElement.value.value = value
+        }
+      })
+    }
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      e.preventDefault() // Prevent default input behavior
+      const key = e.key
+      
+      // Only handle printable characters
+      if (key.length === 1) {
+        const newValue = inputValue.value + key
+        updateValue(newValue)
+      } else if (key === 'Backspace') {
+        const newValue = inputValue.value.slice(0, -1)
+        updateValue(newValue)
+      }
+    }
+
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault()
+      const pastedText = e.clipboardData?.getData('text') || ''
+      const newValue = inputValue.value + pastedText
+      updateValue(newValue)
+    }
+
     const selectedSongGenre = ref('')
     const selectedSongs = ref<string[]>([])
 
@@ -514,24 +558,46 @@ export default defineComponent({
       }
 
       try {
+        // Log the complete form state
+        console.log('Complete form state:', {
+          customAuthorName: customAuthorNameInput.value,
+          formAuthorName: newPost.value.authorName,
+          userDisplayName: userDisplayName.value
+        });
+
+        // Get the trimmed author name from the input ref
+        const customAuthorName = customAuthorNameInput.value.trim();
+        
+        // Use the custom name if provided, otherwise use Google display name
+        const finalAuthorName = customAuthorName || userDisplayName.value;
+        
+        console.log('Author name details:', {
+          customAuthorName,
+          userDisplayName: userDisplayName.value,
+          finalAuthorName
+        });
+        
         const postData = {
-          authorName: newPost.value.authorName || userDisplayName.value,
+          authorName: finalAuthorName,
           content: newPost.value.content,
           createdAt: Timestamp.now(),
-          userId: userId.value, // Use Google Auth UID
+          userId: userId.value,
           userEmail: userEmail.value,
-          displayName: newPost.value.authorName || userDisplayName.value,
+          displayName: userDisplayName.value,
           genreString: newPost.value.genreString || '',
-          isMatched: false, // New posts start as unmatched
+          isMatched: false,
           levelString: newPost.value.levelString || '',
           location: newPost.value.location,
           songIdsString: selectedSongs.value.join(', '),
           title: newPost.value.title
         }
 
+        console.log('Final post data:', postData);
+
         await addDoc(collection(db, 'posts'), postData)
         
         // Reset form
+        customAuthorNameInput.value = '';
         newPost.value = {
           authorName: '',
           location: '',
@@ -551,6 +617,9 @@ export default defineComponent({
 
         // Increment post count
         await incrementPostsCount()
+
+        // Navigate to AllPosts view
+        router.push('/posts')
       } catch (err) {
         console.error('Error creating post:', err)
         error.value = 'Failed to create post'
@@ -589,6 +658,11 @@ export default defineComponent({
 
     onMounted(() => {
       loadPosts()
+      // Get reference to input element
+      inputElement.value = document.getElementById('authorName') as HTMLInputElement
+      if (inputElement.value) {
+        console.log('Input element found and referenced')
+      }
     })
 
     return {
@@ -607,7 +681,12 @@ export default defineComponent({
       filteredSongs,
       clearSelectedSongs,
       removeSong,
-      togglePostStatus
+      togglePostStatus,
+      customAuthorNameInput,
+      inputValue,
+      handleKeyPress,
+      handlePaste,
+      updateValue
     }
   }
 })

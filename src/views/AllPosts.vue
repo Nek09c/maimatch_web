@@ -14,13 +14,13 @@
             <span class="post-time">{{ formatTime(post.createdAt) }}</span>
           </div>
           <div class="post-author">
-            <span class="author-name">{{ post.authorName || post.displayName }}</span>
+            <span class="author-name">{{ post.authorName }}</span>
             <button 
               v-if="isAuthenticated && userId === post.userId"
               @click="togglePostStatus(post)"
               class="match-status clickable" 
               :class="{ matched: post.isMatched }"
-              :title="post.isMatched ? 'Click to mark as OPEN' : 'Click to mark as MATCHED'"
+              :title="post.isMatched ? 'Click to mark as CLOSE' : 'Click to mark as MATCHED'"
             >
               {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
             </button>
