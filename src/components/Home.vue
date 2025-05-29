@@ -40,7 +40,7 @@
     <!-- CC Character Image -->
     <div class="cc-character">
       <img 
-        src="/maimatch_CC.PNG" 
+        :src="ccImage" 
         alt="CC Character" 
         class="cc-image"
       />
@@ -49,7 +49,7 @@
     <!-- Lain Character Image -->
     <div class="lain-character">
       <img 
-        src="/maimatch_lain.PNG" 
+        :src="lainImage" 
         alt="Lain Character" 
         class="lain-image"
       />
@@ -60,6 +60,8 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, getCurrentInstance } from "vue";
 import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore'
+import ccImage from '@/assets/maimatch_CC.PNG'
+import lainImage from '@/assets/maimatch_lain.PNG'
 
 interface RecentPost {
   id: string;
@@ -222,6 +224,8 @@ export default defineComponent({
       arcadeLocations,
       recentPosts,
       formatTime,
+      ccImage,
+      lainImage
     };
   },
 });
