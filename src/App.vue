@@ -14,6 +14,7 @@
           >LOCATIONS</router-link
         >
         <router-link to="/songs" class="cyber-button">SONGS</router-link>
+        <AudioControl />
         <AuthComponent />
       </nav>
       <div class="user-section">
@@ -41,6 +42,7 @@ import { defineComponent, onMounted } from "vue";
 import NewsTicker from './components/NewsTicker.vue';
 import ParticleTransition from './components/ParticleTransition.vue';
 import AuthComponent from './components/AuthComponent.vue';
+import AudioControl from './components/AudioControl.vue';
 import { useAuth } from './composables/useAuth';
 import UserInfo from './components/UserInfo.vue';
 
@@ -50,6 +52,7 @@ export default defineComponent({
     NewsTicker,
     ParticleTransition,
     AuthComponent,
+    AudioControl,
     UserInfo
   },
   setup() {
