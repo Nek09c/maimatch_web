@@ -175,38 +175,39 @@ export default defineComponent({
       try {
         if (isPlaying.value) {
           console.log('Stopping audio...')
+          isPlaying.value = false  // Set state before stopping
           await stopPlaying()
-          isPlaying.value = false
         } else {
           console.log('Starting audio...')
           await startPlaying()
+          // Only set to true if startPlaying succeeded
+          isPlaying.value = true
         }
       } catch (error) {
         console.error('Error toggling audio:', error)
-        isPlaying.value = false
+        isPlaying.value = false  // Ensure it's off if there's an error
+        await stopPlaying()  // Clean up on error
       }
     }
 
-    // Enhance the enableAudio function to handle autoplay better
+    // Enhance the enableAudio function to respect the isPlaying state
     const enableAudio = async () => {
       try {
         if (!isPlaying.value) {
-          console.log('Enabling audio via user interaction...')
-          await startPlaying()
+          // Don't auto-enable if user has explicitly turned it off
+          return
         }
+        console.log('Enabling audio via user interaction...')
+        await startPlaying()
       } catch (error) {
         console.error('Error enabling audio:', error)
+        isPlaying.value = false
       }
     }
 
     onMounted(async () => {
-      // Try to start playing but don't force it
-      try {
-        await startPlaying()
-      } catch (error) {
-        console.log('Initial autoplay failed, waiting for user interaction:', error)
-        isPlaying.value = false
-      }
+      // Start with audio off by default
+      isPlaying.value = false
       
       // Set up interaction listeners
       document.addEventListener('click', enableAudio)
