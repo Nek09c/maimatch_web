@@ -25,10 +25,10 @@ export default defineComponent({
     const overlapTime = 0.1 // seconds of overlap
 
     const createAudioSource = () => {
-      if (!audioContext || !audioBuffer) return null
+      if (!audioContext || !audioBuffer || !gainNode) return null
       const source = audioContext.createBufferSource()
       source.buffer = audioBuffer
-      source.connect(gainNode!)
+      source.connect(gainNode)
       return source
     }
 
@@ -61,19 +61,11 @@ export default defineComponent({
 
     const startPlaying = async () => {
       try {
-        // If context already exists, resume it instead of creating new one
-        if (audioContext) {
-          await audioContext.resume()
-        } else {
-          audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-        }
-
-        // Create gain node if it doesn't exist
-        if (!gainNode) {
-          gainNode = audioContext.createGain()
-          gainNode.gain.value = 0.5
-          gainNode.connect(audioContext.destination)
-        }
+        // Always create a new audio context and nodes when starting
+        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+        gainNode = audioContext.createGain()
+        gainNode.gain.value = 0.5
+        gainNode.connect(audioContext.destination)
 
         // Only load audio buffer if we haven't already
         if (!audioBuffer) {
@@ -126,40 +118,56 @@ export default defineComponent({
       } catch (error) {
         console.error('Audio playback failed:', error)
         isPlaying.value = false
-        // Try to clean up on error
-        stopPlaying()
+        // Clean up on error
+        await stopPlaying()
       }
     }
 
-    const stopPlaying = () => {
-      if (checkInterval) {
-        clearInterval(checkInterval)
-        checkInterval = null
-      }
-
-      // Only stop sources that are actually playing
+    const stopPlaying = async () => {
       try {
-        if (currentSource && audioContext) {
-          // Check if the source is currently scheduled to play
-          const currentTime = audioContext.currentTime
-          if (currentTime >= lastStartTime && currentTime < lastStartTime + (audioBuffer?.duration || 0)) {
+        if (checkInterval) {
+          clearInterval(checkInterval)
+          checkInterval = null
+        }
+
+        // Stop and disconnect current source
+        if (currentSource) {
+          try {
             currentSource.stop()
+          } catch (e) {
+            // Ignore errors if source was already stopped
           }
+          currentSource.disconnect()
+          currentSource = null
         }
-        currentSource = null
 
-        if (nextSource && audioContext) {
-          // For nextSource, we'll just disconnect it since it might not have started
+        // Stop and disconnect next source
+        if (nextSource) {
+          try {
+            nextSource.stop()
+          } catch (e) {
+            // Ignore errors if source was already stopped
+          }
           nextSource.disconnect()
+          nextSource = null
         }
-        nextSource = null
 
+        // Disconnect and null the gain node
+        if (gainNode) {
+          gainNode.disconnect()
+          gainNode = null
+        }
+
+        // Close and null the audio context
         if (audioContext) {
-          audioContext.close()
+          await audioContext.close()
           audioContext = null
         }
+
+        // Keep the decoded audio buffer for reuse
+        console.log('Audio stopped successfully')
       } catch (error) {
-        console.warn('Error while stopping audio:', error)
+        console.error('Error stopping audio:', error)
       }
     }
 
@@ -167,15 +175,11 @@ export default defineComponent({
       try {
         if (isPlaying.value) {
           console.log('Stopping audio...')
-          stopPlaying()
+          await stopPlaying()
           isPlaying.value = false
         } else {
           console.log('Starting audio...')
           await startPlaying()
-          // Only update isPlaying if startPlaying succeeds
-          if (audioContext && audioContext.state === 'running') {
-            isPlaying.value = true
-          }
         }
       } catch (error) {
         console.error('Error toggling audio:', error)
@@ -186,7 +190,7 @@ export default defineComponent({
     // Enhance the enableAudio function to handle autoplay better
     const enableAudio = async () => {
       try {
-        if (!isPlaying.value || (audioContext && audioContext.state !== 'running')) {
+        if (!isPlaying.value) {
           console.log('Enabling audio via user interaction...')
           await startPlaying()
         }
@@ -211,25 +215,21 @@ export default defineComponent({
       // Add visibility change handler
       document.addEventListener('visibilitychange', async () => {
         if (document.hidden) {
-          console.log('Page hidden, suspending audio')
-          if (audioContext) {
-            await audioContext.suspend()
-          }
+          console.log('Page hidden, stopping audio')
+          await stopPlaying()
         } else if (isPlaying.value) {
           console.log('Page visible, resuming audio')
-          if (audioContext) {
-            await audioContext.resume()
-          }
+          await startPlaying()
         }
       })
     })
 
-    onBeforeUnmount(() => {
+    onBeforeUnmount(async () => {
       // Enhanced cleanup
       document.removeEventListener('click', enableAudio)
       document.removeEventListener('keydown', enableAudio)
       document.removeEventListener('visibilitychange', () => {})
-      stopPlaying()
+      await stopPlaying()
     })
 
     return {
