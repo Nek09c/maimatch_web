@@ -61,16 +61,37 @@ export default defineComponent({
 
     const startPlaying = async () => {
       try {
-        // Initialize Web Audio API
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-        gainNode = audioContext.createGain()
-        gainNode.gain.value = 0.5
-        gainNode.connect(audioContext.destination)
+        // If context already exists, resume it instead of creating new one
+        if (audioContext) {
+          await audioContext.resume()
+        } else {
+          audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+        }
 
-        // Load and decode audio file
-        const response = await fetch('/neuron_bgm.mp3')
-        const arrayBuffer = await response.arrayBuffer()
-        audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+        // Create gain node if it doesn't exist
+        if (!gainNode) {
+          gainNode = audioContext.createGain()
+          gainNode.gain.value = 0.5
+          gainNode.connect(audioContext.destination)
+        }
+
+        // Only load audio buffer if we haven't already
+        if (!audioBuffer) {
+          console.log('Loading audio file...')
+          // Get the base URL for the deployment
+          const baseUrl = import.meta.env.BASE_URL || '/'
+          // Construct the full audio path
+          const audioPath = `${baseUrl}assets/neuron_bgm.mp3`.replace('//', '/')
+          console.log('Attempting to load audio from:', audioPath)
+          
+          const response = await fetch(audioPath)
+          if (!response.ok) {
+            throw new Error(`Failed to load audio file from ${audioPath}: ${response.status} ${response.statusText}`)
+          }
+          const arrayBuffer = await response.arrayBuffer()
+          audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+          console.log('Audio file loaded successfully')
+        }
 
         // Start initial playback
         currentSource = createAudioSource()
@@ -80,15 +101,22 @@ export default defineComponent({
           isPlaying.value = true
 
           // Set up checking interval
+          if (checkInterval) {
+            clearInterval(checkInterval)
+          }
           checkInterval = window.setInterval(() => {
-            if (audioContext) {
+            if (audioContext && isPlaying.value) {
               scheduleNextLoop(audioContext.currentTime)
             }
           }, 10) // Check every 10ms
+
+          console.log('Audio playback started successfully')
         }
       } catch (error) {
-        console.log('Audio playback failed:', error)
+        console.error('Audio playback failed:', error)
         isPlaying.value = false
+        // Try to clean up on error
+        stopPlaying()
       }
     }
 
@@ -124,36 +152,72 @@ export default defineComponent({
       }
     }
 
-    const toggleAudio = () => {
-      if (isPlaying.value) {
-        stopPlaying()
-      } else {
-        startPlaying()
+    const toggleAudio = async () => {
+      try {
+        if (isPlaying.value) {
+          console.log('Stopping audio...')
+          stopPlaying()
+          isPlaying.value = false
+        } else {
+          console.log('Starting audio...')
+          await startPlaying()
+          // Only update isPlaying if startPlaying succeeds
+          if (audioContext && audioContext.state === 'running') {
+            isPlaying.value = true
+          }
+        }
+      } catch (error) {
+        console.error('Error toggling audio:', error)
+        isPlaying.value = false
       }
-      isPlaying.value = !isPlaying.value
     }
 
-    // Add user interaction event listeners to enable autoplay
-    const enableAudio = () => {
-      if (!isPlaying.value) {
-        startPlaying()
+    // Enhance the enableAudio function to handle autoplay better
+    const enableAudio = async () => {
+      try {
+        if (!isPlaying.value || (audioContext && audioContext.state !== 'running')) {
+          console.log('Enabling audio via user interaction...')
+          await startPlaying()
+        }
+      } catch (error) {
+        console.error('Error enabling audio:', error)
       }
-      // Remove the event listeners after first interaction
-      document.removeEventListener('click', enableAudio)
-      document.removeEventListener('keydown', enableAudio)
     }
 
-    onMounted(() => {
-      // Start playing and also set up interaction listeners as fallback
-      startPlaying()
+    onMounted(async () => {
+      // Try to start playing but don't force it
+      try {
+        await startPlaying()
+      } catch (error) {
+        console.log('Initial autoplay failed, waiting for user interaction:', error)
+        isPlaying.value = false
+      }
+      
+      // Set up interaction listeners
       document.addEventListener('click', enableAudio)
       document.addEventListener('keydown', enableAudio)
+
+      // Add visibility change handler
+      document.addEventListener('visibilitychange', async () => {
+        if (document.hidden) {
+          console.log('Page hidden, suspending audio')
+          if (audioContext) {
+            await audioContext.suspend()
+          }
+        } else if (isPlaying.value) {
+          console.log('Page visible, resuming audio')
+          if (audioContext) {
+            await audioContext.resume()
+          }
+        }
+      })
     })
 
     onBeforeUnmount(() => {
-      // Clean up
+      // Enhanced cleanup
       document.removeEventListener('click', enableAudio)
       document.removeEventListener('keydown', enableAudio)
+      document.removeEventListener('visibilitychange', () => {})
       stopPlaying()
     })
 
