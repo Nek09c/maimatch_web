@@ -78,10 +78,21 @@ export default defineComponent({
         // Only load audio buffer if we haven't already
         if (!audioBuffer) {
           console.log('Loading audio file...')
-          // Get the base URL for the deployment
-          const baseUrl = import.meta.env.BASE_URL || '/'
-          // Construct the full audio path
-          const audioPath = `${baseUrl}assets/neuron_bgm.mp3`.replace('//', '/')
+          
+          // Get the deployment base URL
+          const getBaseUrl = () => {
+            // Check if we're on GitHub Pages
+            const currentUrl = window.location.href
+            if (currentUrl.includes('github.io')) {
+              // Extract the repository name from the URL
+              const pathParts = window.location.pathname.split('/')
+              return pathParts[1] ? `/${pathParts[1]}/` : '/'
+            }
+            return '/'
+          }
+
+          const baseUrl = getBaseUrl()
+          const audioPath = `${baseUrl}assets/neuron_bgm.mp3`.replace(/\/+/g, '/')
           console.log('Attempting to load audio from:', audioPath)
           
           const response = await fetch(audioPath)
