@@ -348,19 +348,24 @@ export default defineComponent({
   position: relative;
   z-index: 1;
   padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .terminal-text h2 {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1.2rem, 4vw, 2.5rem);
   margin-bottom: 1rem;
   background: transparent;
   line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  white-space: normal;
+  width: 100%;
+  display: block;
 }
 
 .terminal-text p {
-  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  font-size: clamp(0.8rem, 2.5vw, 1.2rem);
   opacity: 0.8;
   background: transparent;
   line-height: 1.4;
@@ -368,6 +373,7 @@ export default defineComponent({
   overflow-wrap: break-word;
   max-width: 100%;
   margin: 0 auto;
+  white-space: normal;
 }
 
 .no-recent-posts {
@@ -526,10 +532,26 @@ export default defineComponent({
 @media screen and (max-width: 768px) {
   .terminal-text {
     margin-bottom: 1rem;
+    padding: 0 0.5rem;
   }
   
   .terminal-text h2 {
     margin-bottom: 0.5rem;
+    font-size: clamp(1.2rem, 3.5vw, 2rem);
+  }
+
+  .terminal-text p {
+    font-size: clamp(0.8rem, 2.2vw, 1rem);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .terminal-text h2 {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .terminal-text p {
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
   }
 }
 </style>
