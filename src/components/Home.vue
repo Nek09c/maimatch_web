@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LoadingScreen v-if="!isLoadingComplete" @loading-complete="onLoadingComplete" />
+    <LoadingScreen v-if="!isLoadingComplete && isFirstVisit" @loading-complete="onLoadingComplete" />
     
     <!-- CC Character Image -->
     <div class="cc-character">
@@ -20,7 +20,7 @@
       />
     </div>
 
-    <div class="home-container" :class="{ 'content-loaded': isLoadingComplete }">
+    <div class="home-container" :class="{ 'content-loaded': isLoadingComplete || !isFirstVisit }">
       <div class="terminal-text">
         <h2>WELCOME TO MAIMATCH</h2>
         <p>CONNECTING MAIMAI PLAYERS ACROSS HONG KONG</p>
@@ -81,6 +81,7 @@ export default defineComponent({
   },
   setup() {
     const isLoadingComplete = ref(false)
+    const isFirstVisit = ref(true)
     const totalSongsPlayed = ref(0);
     const totalPosts = ref(0);
     const arcadeLocations = ref(8);
@@ -88,6 +89,17 @@ export default defineComponent({
 
     const onLoadingComplete = () => {
       isLoadingComplete.value = true
+      // Mark that the user has visited
+      localStorage.setItem('hasVisitedBefore', 'true')
+      isFirstVisit.value = false
+    }
+
+    const checkFirstVisit = () => {
+      const hasVisitedBefore = localStorage.getItem('hasVisitedBefore')
+      if (hasVisitedBefore === 'true') {
+        isFirstVisit.value = false
+        isLoadingComplete.value = true
+      }
     }
 
     const getImageUrl = (imageName: string) => {
@@ -230,12 +242,14 @@ export default defineComponent({
     }
 
     onMounted(() => {
+      checkFirstVisit()
       loadStats()
       loadRecentPosts()
     })
 
     return {
       isLoadingComplete,
+      isFirstVisit,
       onLoadingComplete,
       totalSongsPlayed,
       totalPosts,

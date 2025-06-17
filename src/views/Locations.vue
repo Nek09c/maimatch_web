@@ -1,15 +1,5 @@
 <template>
   <div class="locations-container">
-    <div class="cyber-box location-map">
-      <h3>ARCADE LOCATIONS</h3>
-      <div class="map-container">
-        <!-- Placeholder for map integration -->
-        <div class="map-placeholder">
-          <span class="glitch">MAP LOADING...</span>
-        </div>
-      </div>
-    </div>
-
     <div class="locations-grid">
       <div v-for="location in locations" :key="location.id" class="cyber-box location-card">
         <h4 class="glitch">{{ location.name }}</h4>
@@ -191,24 +181,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 2rem;
-}
-
-.location-map {
-  margin-bottom: 2rem;
-}
-
-.map-container {
-  height: 300px;
-  background: var(--lain-secondary);
-  border: 1px solid var(--lain-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.map-placeholder {
-  color: var(--lain-accent);
-  font-size: 1.5rem;
+  padding: 1rem;
 }
 
 .locations-grid {
@@ -221,6 +194,15 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1.5rem;
+  background: var(--lain-bg);
+  border: 1px solid var(--lain-accent);
+  transition: all 0.3s ease;
+}
+
+.location-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.1);
 }
 
 .location-info {
@@ -232,6 +214,7 @@ export default defineComponent({
 .location-address {
   color: var(--lain-text);
   opacity: 0.9;
+  font-size: 1rem;
 }
 
 .location-hours, .location-machines {
@@ -264,5 +247,15 @@ export default defineComponent({
 .stat-value {
   color: var(--lain-accent);
   font-size: 1.2rem;
+}
+
+@media screen and (max-width: 768px) {
+  .locations-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .location-card {
+    padding: 1rem;
+  }
 }
 </style> 
