@@ -1,11 +1,11 @@
 <template>
   <div class="all-posts-container">
     <div class="cyber-box">
-      <h2 class="glitch">ALL CONNECTIONS</h2>
+      <h2 class="glitch">所有連接</h2>
       
-      <div v-if="loading" class="loading">LOADING CONNECTIONS...</div>
+      <div v-if="loading" class="loading">載入中...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
-      <div v-else-if="posts.length === 0" class="no-posts">NO CONNECTIONS FOUND</div>
+      <div v-else-if="posts.length === 0" class="no-posts">冇搵到連接</div>
       
       <div v-else class="posts-grid">
         <div v-for="post in posts" :key="post.id" class="post-card">
@@ -20,31 +20,31 @@
               @click="togglePostStatus(post)"
               class="match-status clickable" 
               :class="{ matched: post.isMatched }"
-              :title="post.isMatched ? 'Click to mark as CLOSE' : 'Click to mark as MATCHED'"
+              :title="post.isMatched ? '點擊標記為已完' : '點擊標記為已搵到'"
             >
-              {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
+              {{ post.isMatched ? '✓ 已搵到' : '○ 搵緊' }}
             </button>
             <span 
               v-else
               class="match-status" 
               :class="{ matched: post.isMatched }"
             >
-              {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
+              {{ post.isMatched ? '✓ 已搵到' : '○ 搵緊' }}
             </span>
           </div>
           <h3 class="post-title">{{ post.title }}</h3>
           <p class="post-content">{{ post.content }}</p>
           <div class="post-details">
             <div class="detail-row" v-if="post.genreString">
-              <span class="detail-label">GENRES:</span>
+              <span class="detail-label">類型：</span>
               <span class="detail-value">{{ post.genreString }}</span>
             </div>
             <div class="detail-row" v-if="post.levelString">
-              <span class="detail-label">LEVELS:</span>
+              <span class="detail-label">難度：</span>
               <span class="detail-value">{{ post.levelString }}</span>
             </div>
             <div class="detail-row" v-if="post.songIdsString">
-              <span class="detail-label">SONGS:</span>
+              <span class="detail-label">歌曲：</span>
               <span class="detail-value">{{ post.songIdsString }}</span>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default defineComponent({
     const error = ref<string | null>(null)
 
     const formatTime = (createdAt: any) => {
-      if (!createdAt) return 'Unknown time'
+      if (!createdAt) return '未知時間'
       
       let postTime: Date
       if (createdAt.toDate) {
@@ -95,7 +95,7 @@ export default defineComponent({
       } else if (createdAt instanceof Date) {
         postTime = createdAt
       } else {
-        return 'Invalid time'
+        return '無效時間'
       }
       
       const now = new Date()
@@ -105,10 +105,10 @@ export default defineComponent({
       const hours = Math.floor(minutes / 60)
       const days = Math.floor(hours / 24)
 
-      if (days > 0) return `${days}d ago`
-      if (hours > 0) return `${hours}h ago`
-      if (minutes > 0) return `${minutes}m ago`
-      return 'just now'
+      if (days > 0) return `${days}日前`
+      if (hours > 0) return `${hours}小時前`
+      if (minutes > 0) return `${minutes}分鐘前`
+      return '啱啱'
     }
 
     const loadPosts = async () => {

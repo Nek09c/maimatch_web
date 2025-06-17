@@ -1,22 +1,22 @@
 <template>
   <div class="forum-container">
     <div class="cyber-box create-post">
-      <h3>CREATE CONNECTION</h3>
+      <h3>コネクト START</h3>
       
       <!-- Authentication check -->
       <div v-if="!isAuthenticated" class="auth-required">
-        <p class="glitch">⚠️ AUTHENTICATION REQUIRED</p>
-        <p>Please sign in with Google to create a post</p>
+        <p class="glitch">⚠️ 需要登入</p>
+        <p>請用 Google 登入先可以同人マイ マッチ</p>
       </div>
       
       <div v-else class="user-status">
-        <p class="posting-as">POSTING AS: <span class="glitch">{{ userDisplayName }}</span></p>
+        <p class="posting-as">名前：<span class="glitch">{{ userDisplayName }}</span></p>
       </div>
       
       <form @submit.prevent="createPost" class="post-form" :class="{ disabled: !isAuthenticated }">
         <div class="form-group">
-          <label for="authorName">DISPLAY NAME (Optional)</label>
-          <input 
+          <label for="authorName">顯示名稱（可選）</label>
+          <inpu名前
             type="text" 
             id="authorName"
             ref="inputElement"
@@ -31,7 +31,7 @@
         </div>
         
         <div class="form-group">
-          <label for="location">LOCATION</label>
+          <label for="location">機舖</label>
           <select 
             id="location"
             v-model="newPost.location" 
@@ -39,7 +39,7 @@
             :disabled="!isAuthenticated"
             class="cyber-input"
           >
-            <option value="">SELECT ARCADE</option>
+            <option value="">選擇機舖</option>
             <option v-for="location in locations" :key="location" :value="location">
               {{ location }}
             </option>
@@ -47,26 +47,26 @@
         </div>
         
         <div class="form-group">
-          <label for="title">TITLE</label>
+          <label for="title">標題</label>
           <input 
             type="text" 
             id="title"
             v-model="newPost.title" 
             required 
             :disabled="!isAuthenticated"
-            placeholder="Looking for partner..."
+            placeholder="搵人一齊玩..."
             class="cyber-input"
           />
         </div>
         
         <div class="form-group">
-          <label for="content">MESSAGE</label>
+          <label for="content">內容</label>
           <textarea 
             id="content"
             v-model="newPost.content" 
             required 
             :disabled="!isAuthenticated"
-            placeholder="Describe what you're looking for..."
+            placeholder="講下你想玩咩歌..."
             class="cyber-input"
           ></textarea>
         </div>
@@ -111,53 +111,43 @@
               :disabled="!isAuthenticated"
               class="cyber-input"
             >
-              <option value="">ALL GENRES</option>
-              <option value="popAndAnime">Pop & Anime</option>
-              <option value="niconicoAndVocaloid">Niconico & Vocaloid</option>
-              <option value="touhou">東方project</option>
-              <option value="gameAndVariety">Game & Variety</option>
-              <option value="maimai">Maimai</option>
-              <option value="ongekiAndChunithm">Ongeki & Chunithm</option>
+              <option value="">選擇歌曲類型</option>
+              <option value="ongekiAndChunithm">O.N.G.E.K.I. & CHUNITHM</option>
+              <option value="maimai">maimai</option>
+              <option value="wacca">WACCA</option>
+              <option value="danceDanceRevolution">Dance Dance Revolution</option>
+              <option value="beatmaniaIIDX">beatmania IIDX</option>
+              <option value="popnMusic">pop'n music</option>
+              <option value="soundVoltex">SOUND VOLTEX</option>
+              <option value="jubeat">jubeat</option>
+              <option value="nostalgia">NOSTALGIA</option>
+              <option value="taikoNoTatsujin">太鼓の達人</option>
+              <option value="projectDiva">Project DIVA</option>
             </select>
             
-            <div class="song-list">
-              <label>Select up to 4 songs (from any genre):</label>
-              <div class="song-checkboxes">
-                <div 
-                  v-for="song in filteredSongs" 
-                  :key="song.id" 
-                  class="song-checkbox"
+            <div v-if="selectedSongGenre" class="selected-songs">
+              <div class="selected-songs-header">
+                <h4>已選歌曲</h4>
+                <button 
+                  type="button" 
+                  @click="clearSelectedSongs" 
+                  class="clear-songs"
+                  :disabled="!isAuthenticated"
                 >
+                  清除
+                </button>
+              </div>
+              <div class="song-list">
+                <div v-for="song in filteredSongs" :key="song.id" class="song-item">
                   <input 
                     type="checkbox" 
                     :id="song.id"
                     :value="song.title"
                     v-model="selectedSongs"
-                    :disabled="!isAuthenticated || (selectedSongs.length >= 4 && !selectedSongs.includes(song.title))"
-                    class="cyber-checkbox"
+                    :disabled="!isAuthenticated"
                   />
-                  <label :for="song.id" class="song-label">{{ song.title }}</label>
+                  <label :for="song.id">{{ song.title }}</label>
                 </div>
-              </div>
-              <div class="selected-songs-display" v-if="selectedSongs.length > 0">
-                <h5>Selected Songs:</h5>
-                <div class="selected-song-tags">
-                  <span 
-                    v-for="(song, index) in selectedSongs" 
-                    :key="index"
-                    class="song-tag"
-                  >
-                    {{ song }}
-                    <button 
-                      @click="removeSong(song)"
-                      class="remove-song-btn"
-                      type="button"
-                    >×</button>
-                  </span>
-                </div>
-              </div>
-              <div class="selected-count">
-                Selected: {{ selectedSongs.length }}/4
               </div>
             </div>
           </div>
@@ -168,16 +158,16 @@
           class="cyber-button submit-btn" 
           :disabled="!isAuthenticated"
         >
-          {{ isAuthenticated ? 'CREATE POST' : 'SIGN IN TO POST' }}
+          {{ isAuthenticated ? '發文' : 'SIGN IN TO POST' }}
         </button>
       </form>
     </div>
 
     <div class="cyber-box posts-list">
-      <h3>ACTIVE CONNECTIONS</h3>
-      <div v-if="loading" class="loading">LOADING CONNECTIONS...</div>
+      <h3>活躍連接</h3>
+      <div v-if="loading" class="loading">載入中...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
-      <div v-else-if="posts.length === 0" class="no-posts">NO CONNECTIONS FOUND</div>
+      <div v-else-if="posts.length === 0" class="no-posts">冇搵到連接</div>
       <div v-else v-for="post in posts" :key="post.id" class="post-card">
         <div class="post-header">
           <span class="post-location glitch">{{ post.location }}</span>
@@ -190,31 +180,31 @@
             @click="togglePostStatus(post)"
             class="match-status clickable" 
             :class="{ matched: post.isMatched }"
-            :title="post.isMatched ? 'Click to mark as CLOSE' : 'Click to mark as MATCHED'"
+            :title="post.isMatched ? '點擊標記為已完' : '點擊標記為已搵到'"
           >
-            {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
+            {{ post.isMatched ? '✓ 已搵到' : '○ 搵緊' }}
           </button>
           <span 
             v-else
             class="match-status" 
             :class="{ matched: post.isMatched }"
           >
-            {{ post.isMatched ? '✓ MATCHED' : '○ OPEN' }}
+            {{ post.isMatched ? '✓ 已搵到' : '○ 搵緊' }}
           </span>
         </div>
         <h4 class="post-title">{{ post.title }}</h4>
         <p class="post-content">{{ post.content }}</p>
         <div class="post-details" v-if="post.genreString || post.levelString || post.songIdsString">
           <div class="detail-row" v-if="post.genreString">
-            <span class="detail-label">GENRES:</span>
+            <span class="detail-label">類型：</span>
             <span class="detail-value">{{ post.genreString }}</span>
           </div>
           <div class="detail-row" v-if="post.levelString">
-            <span class="detail-label">LEVELS:</span>
+            <span class="detail-label">難度：</span>
             <span class="detail-value">{{ post.levelString }}</span>
           </div>
           <div class="detail-row" v-if="post.songIdsString">
-            <span class="detail-label">SONGS:</span>
+            <span class="detail-label">歌曲：</span>
             <span class="detail-value">{{ post.songIdsString }}</span>
           </div>
         </div>
@@ -487,7 +477,7 @@ export default defineComponent({
     })
 
     const formatTime = (createdAt: any) => {
-      if (!createdAt) return 'Unknown time'
+      if (!createdAt) return '未知時間'
       
       let postTime: Date
       if (createdAt.toDate) {
@@ -496,7 +486,7 @@ export default defineComponent({
       } else if (createdAt instanceof Date) {
         postTime = createdAt
       } else {
-        return 'Invalid time'
+        return '無效時間'
       }
       
       const now = new Date()
@@ -506,10 +496,10 @@ export default defineComponent({
       const hours = Math.floor(minutes / 60)
       const days = Math.floor(hours / 24)
 
-      if (days > 0) return `${days}d ago`
-      if (hours > 0) return `${hours}h ago`
-      if (minutes > 0) return `${minutes}m ago`
-      return 'just now'
+      if (days > 0) return `${days}日前`
+      if (hours > 0) return `${hours}小時前`
+      if (minutes > 0) return `${minutes}分鐘前`
+      return '啱啱'
     }
 
     const loadPosts = async () => {

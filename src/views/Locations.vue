@@ -5,16 +5,16 @@
         <h4 class="glitch">{{ location.name }}</h4>
         <div class="location-info">
           <p class="location-address">{{ location.address }}</p>
-          <p class="location-hours">OPEN: {{ location.hours }}</p>
-          <p class="location-machines">MACHINES: {{ location.machines }}</p>
+          <p class="location-hours">營業時間：{{ location.hours }}</p>
+          <p class="location-machines">機台數量：{{ location.machines }}</p>
         </div>
         <div class="location-stats">
           <div class="stat">
-            <span class="stat-label">TOTAL POSTS</span>
+            <span class="stat-label">總共貼文</span>
             <span class="stat-value">{{ location.totalPosts }}</span>
           </div>
           <div class="stat">
-            <span class="stat-label">TODAY'S POSTS</span>
+            <span class="stat-label">今日貼文</span>
             <span class="stat-value">{{ location.todayPosts }}</span>
           </div>
         </div>

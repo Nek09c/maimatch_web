@@ -7,13 +7,11 @@
     <header class="cyber-box">
       <h1 class="glitch">MAIMATCH</h1>
       <nav>
-        <router-link to="/" class="cyber-button">HOME</router-link>
-        <router-link to="/forum" class="cyber-button">FORUM</router-link>
-        <router-link to="/posts" class="cyber-button">POSTS</router-link>
-        <router-link to="/locations" class="cyber-button"
-          >LOCATIONS</router-link
-        >
-        <router-link to="/songs" class="cyber-button">SONGS</router-link>
+        <router-link to="/" class="cyber-button">主頁</router-link>
+        <router-link to="/forum" class="cyber-button">マッチする</router-link>
+        <router-link to="/posts" class="cyber-button">昔のマッチ</router-link>
+        <router-link to="/locations" class="cyber-button">機舖</router-link>
+        <router-link to="/songs" class="cyber-button">歌曲庫</router-link>
         <AudioControl />
         <AuthComponent />
       </nav>
@@ -31,7 +29,7 @@
     </main>
 
     <footer class="cyber-box">
-      <p>CONNECTED TO THE WIRED</p>
+      <p>已連接至Maimatch</p>
       <p class="glitch">MAIMATCH WEB v0.1.0</p>
     </footer>
   </div>

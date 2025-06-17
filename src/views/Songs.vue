@@ -1,23 +1,23 @@
 <template>
   <div class="songs-container">
     <div class="cyber-box search-section">
-      <h3>SONG DATABASE</h3>
+      <h3>歌曲庫</h3>
       <div class="search-controls">
         <input 
           type="text" 
           v-model="searchQuery" 
-          placeholder="SEARCH SONGS..."
+          placeholder="我想搵..."
           class="search-input"
         >
         <select v-model="selectedCategory" class="category-select">
-          <option value="">ALL CATEGORIES</option>
+          <option value="">所有分類</option>
           <option v-for="category in categories" :key="category.key" :value="category.key">
             {{ category.name }} ({{ getCategoryCount(category.key) }})
           </option>
         </select>
       </div>
       <div class="stats-bar">
-        <span class="total-songs">TOTAL SONGS: {{ filteredSongs.length }} / {{ allSongs.length }}</span>
+        <span class="total-songs">總歌曲數量: {{ filteredSongs.length }} / {{ allSongs.length }}</span>
       </div>
     </div>
 

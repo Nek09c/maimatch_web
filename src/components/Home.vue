@@ -22,33 +22,33 @@
 
     <div class="home-container" :class="{ 'content-loaded': isLoadingComplete || !isFirstVisit }">
       <div class="terminal-text">
-        <h2>WELCOME TO MAIMATCH</h2>
-        <p>CONNECTING MAIMAI PLAYERS ACROSS HONG KONG</p>
+        <h2>歡迎來到 MAIMATCH</h2>
+        <p>連接香港各地嘅 MAIMAI 玩家</p>
       </div>
 
       <div class="cyber-box stats-container">
-        <h3>SYSTEM STATUS</h3>
+        <h3>系統狀態</h3>
         <div class="stats-grid">
           <div class="stat-item">
-            <span class="stat-label">TOTAL SONGS PLAYED</span>
+            <span class="stat-label">總共玩過嘅歌</span>
             <span class="stat-value glitch">{{ totalSongsPlayed }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">TOTAL POSTS</span>
+            <span class="stat-label">總共嘅貼文</span>
             <span class="stat-value glitch">{{ totalPosts }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">ARCADE LOCATIONS</span>
+            <span class="stat-label">機舖位置</span>
             <span class="stat-value glitch">{{ arcadeLocations }}</span>
           </div>
         </div>
       </div>
 
       <div class="cyber-box recent-posts">
-        <h3>RECENT CONNECTIONS</h3>
+        <h3>最近嘅マッチ</h3>
         <div v-if="recentPosts.length === 0" class="no-recent-posts">
-          <p>No recent connections in the last hour</p>
-          <p style="font-size: 0.8rem; opacity: 0.7;">Check back later or create a new post!</p>
+          <p>過去一個鐘冇新嘅マッチ</p>
+          <p style="font-size: 0.8rem; opacity: 0.7;">遲啲再睇或者開新貼文啦！</p>
         </div>
         <div v-else v-for="post in recentPosts" :key="post.id" class="post-item">
           <span class="post-location">{{ post.location }}</span>
@@ -108,7 +108,7 @@ export default defineComponent({
     };
 
     const formatTime = (createdAt: any) => {
-      if (!createdAt) return 'Unknown time'
+      if (!createdAt) return '未知時間'
       
       let postTime: Date
       if (createdAt.toDate) {
@@ -117,7 +117,7 @@ export default defineComponent({
       } else if (createdAt instanceof Date) {
         postTime = createdAt
       } else {
-        return 'Invalid time'
+        return '無效時間'
       }
       
       const now = new Date()
@@ -127,10 +127,10 @@ export default defineComponent({
       const hours = Math.floor(minutes / 60)
       const days = Math.floor(hours / 24)
 
-      if (days > 0) return `${days}d ago`
-      if (hours > 0) return `${hours}h ago`
-      if (minutes > 0) return `${minutes}m ago`
-      return 'just now'
+      if (days > 0) return `${days}日前`
+      if (hours > 0) return `${hours}小時前`
+      if (minutes > 0) return `${minutes}分鐘前`
+      return '啱啱'
     }
 
     const loadStats = async () => {
