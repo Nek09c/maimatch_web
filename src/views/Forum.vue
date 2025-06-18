@@ -16,7 +16,7 @@
       <form @submit.prevent="createPost" class="post-form" :class="{ disabled: !isAuthenticated }">
         <div class="form-group">
           <label for="authorName">顯示名稱（可選）</label>
-          <inpu名前
+          <input
             type="text" 
             id="authorName"
             ref="inputElement"
