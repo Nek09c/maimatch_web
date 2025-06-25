@@ -112,17 +112,13 @@
               class="cyber-input"
             >
               <option value="">選擇歌曲類型</option>
-              <option value="ongekiAndChunithm">O.N.G.E.K.I. & CHUNITHM</option>
-              <option value="maimai">maimai</option>
-              <option value="wacca">WACCA</option>
-              <option value="danceDanceRevolution">Dance Dance Revolution</option>
-              <option value="beatmaniaIIDX">beatmania IIDX</option>
-              <option value="popnMusic">pop'n music</option>
-              <option value="soundVoltex">SOUND VOLTEX</option>
-              <option value="jubeat">jubeat</option>
-              <option value="nostalgia">NOSTALGIA</option>
-              <option value="taikoNoTatsujin">太鼓の達人</option>
-              <option value="projectDiva">Project DIVA</option>
+              <option value="popAndAnime">Pop & Anime</option>
+              <option value="niconicoAndVocaloid">Niconico & Vocaloid</option>
+              <option value="touhou">東方project</option>
+              <option value="gameAndVariety">Game & Variety</option>
+              <option value="maimai">Maimai</option>
+              <option value="ongekiAndChunithm">Ongeki & Chunithm</option>
+              <option value="partyRoom">宴会場</option>
             </select>
             
             <div v-if="selectedSongGenre" class="selected-songs">
@@ -1090,5 +1086,137 @@ textarea {
 
 .remove-song-btn:hover {
   background: rgba(0, 0, 0, 0.3);
+}
+
+.selected-songs {
+  border: 1px solid var(--system-border);
+  background: rgba(0, 0, 0, 0.2);
+  margin-top: 1rem;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-songs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--system-bg);
+  border-bottom: 1px solid var(--system-border);
+}
+
+.selected-songs-header h4 {
+  margin: 0;
+  color: var(--system-accent);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.clear-songs {
+  background: transparent;
+  border: 1px solid var(--system-accent);
+  color: var(--system-accent);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Courier New", monospace;
+}
+
+.clear-songs:hover {
+  background: var(--system-accent);
+  color: var(--system-bg);
+}
+
+.clear-songs:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.song-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.song-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.song-list::-webkit-scrollbar-track {
+  background: var(--system-bg);
+}
+
+.song-list::-webkit-scrollbar-thumb {
+  background: var(--system-accent);
+  border-radius: 4px;
+}
+
+.song-list::-webkit-scrollbar-thumb:hover {
+  background: var(--system-glitch);
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.song-item:hover {
+  background: rgba(255, 0, 255, 0.1);
+}
+
+.song-item input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--system-accent);
+  background: var(--system-bg);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.song-item input[type="checkbox"]:checked {
+  background: var(--system-accent);
+  border-color: var(--system-accent);
+}
+
+.song-item input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: var(--system-bg);
+  font-size: 12px;
+  font-weight: bold;
+  left: 2px;
+  top: -1px;
+}
+
+.song-item input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.song-item label {
+  flex: 1;
+  color: var(--system-text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-item:hover label {
+  color: var(--system-accent);
 }
 </style> 
