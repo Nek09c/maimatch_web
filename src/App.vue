@@ -12,6 +12,7 @@
         <router-link to="/posts" class="cyber-button">昔のマッチ</router-link>
         <router-link to="/locations" class="cyber-button">機舖</router-link>
         <router-link to="/songs" class="cyber-button">歌曲庫</router-link>
+        <router-link to="/study" class="cyber-button">學習模式</router-link>
         <AudioControl />
         <AuthComponent />
       </nav>
