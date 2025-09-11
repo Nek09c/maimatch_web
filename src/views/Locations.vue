@@ -43,73 +43,181 @@ export default defineComponent({
     const locations = ref<Location[]>([
       {
         id: 1,
-        name: '鑽石山',
-        address: '鑽石山荷里活廣場',
-        hours: '10:00 - 22:00',
-        machines: '4',
+        name: '旺角新之城',
+        address: '旺角彌敦道新之城',
+        hours: '10:00 - 02:30',
+        machines: '22',
         totalPosts: 0,
         todayPosts: 0
       },
       {
         id: 2,
-        name: '旺角新之城',
-        address: '旺角彌敦道新之城',
-        hours: '11:00 - 23:00',
+        name: '旺角金雞',
+        address: '旺角彌敦道金雞',
+        hours: '09:15 - 01:45',
         machines: '6',
         totalPosts: 0,
         todayPosts: 0
       },
       {
         id: 3,
-        name: '旺角 Smart Games',
-        address: '旺角彌敦道 Smart Games',
-        hours: '11:00 - 23:00',
-        machines: '4',
+        name: '荃灣金星',
+        address: '荃灣荃金商場金星',
+        hours: '07:50 - 02:30',
+        machines: '14',
         totalPosts: 0,
         todayPosts: 0
       },
       {
         id: 4,
-        name: '荃金',
-        address: '荃灣荃金商場',
-        hours: '10:00 - 22:00',
-        machines: '4',
-        totalPosts: 0,
-        todayPosts: 0
-      },
-      {
-        id: 5,
-        name: '大埔李福林',
-        address: '大埔李福林體育館',
-        hours: '10:00 - 22:00',
+        name: '佐敦GAMEZONE',
+        address: '佐敦道GAMEZONE',
+        hours: '08:00 - 00:00',
         machines: '2',
         totalPosts: 0,
         todayPosts: 0
       },
       {
+        id: 5,
+        name: '鑽石山鑽荷',
+        address: '鑽石山荷里活廣場',
+        hours: '08:00 - 00:20',
+        machines: '12',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
         id: 6,
-        name: '油麻地金星',
-        address: '油麻地彌敦道金星',
-        hours: '11:00 - 23:00',
-        machines: '4',
+        name: '長沙灣龍威',
+        address: '長沙灣龍威商場',
+        hours: '11:00 - 22:00',
+        machines: '5',
         totalPosts: 0,
         todayPosts: 0
       },
       {
         id: 7,
-        name: '旺角金雞',
-        address: '旺角彌敦道金雞',
-        hours: '11:00 - 23:00',
-        machines: '4',
+        name: '觀塘觀廣',
+        address: '觀塘觀塘廣場',
+        hours: '08:00 - 02:00',
+        machines: '6',
         totalPosts: 0,
         todayPosts: 0
       },
       {
         id: 8,
-        name: '灣仔金星',
-        address: '灣仔軒尼詩道金星',
-        hours: '11:00 - 23:00',
+        name: '觀塘168',
+        address: '觀塘168商場',
+        hours: '09:00 - 00:00',
+        machines: '1',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 9,
+        name: '沙田沙龍',
+        address: '沙田沙田廣場',
+        hours: '08:00 - 02:00',
+        machines: '2',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 10,
+        name: '深水埗電子',
+        address: '深水埗電子街',
+        hours: '08:00 - 00:00',
+        machines: '1',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 11,
+        name: '天水圍PC',
+        address: '天水圍天恩邨PC',
+        hours: '08:00 - 02:00',
+        machines: '5',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 12,
+        name: '尖沙嘴RETROCITY',
+        address: '尖沙嘴RETROCITY',
+        hours: '12:00 - 24:00',
+        machines: '2',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 13,
+        name: '尖沙嘴新港',
+        address: '尖沙嘴新港中心',
+        hours: '08:00 - 02:00',
+        machines: '5',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 14,
+        name: '屯門天天',
+        address: '屯門天天商場',
+        hours: '08:00 - 00:00',
+        machines: '1',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 15,
+        name: '大埔IGAME',
+        address: '大埔IGAME電競館',
+        hours: '08:00 - 02:30',
+        machines: '1',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 16,
+        name: '油麻地金星',
+        address: '油麻地彌敦道金星',
+        hours: '08:00 - 02:00',
+        machines: '1',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 17,
+        name: '灣仔SG',
+        address: '灣仔灣仔道230號',
+        hours: '08:00 - 02:00',
         machines: '4',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 18,
+        name: '西灣河太安樓',
+        address: '西灣河太安樓商場',
+        hours: '08:00 - 00:00',
+        machines: '4',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 19,
+        name: '葵涌碧富',
+        address: '葵涌碧富商場',
+        hours: '08:00 - 00:00',
+        machines: '1',
+        totalPosts: 0,
+        todayPosts: 0
+      },
+      {
+        id: 20,
+        name: '香港仔珍寶',
+        address: '香港仔珍寶商場',
+        hours: '08:30 - 00:00',
+        machines: '1',
         totalPosts: 0,
         todayPosts: 0
       }

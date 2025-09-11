@@ -252,14 +252,26 @@ export default defineComponent({
     const loading = ref(true)
     const error = ref<string | null>(null)
     const locations = [
-      '鑽石山',
-      '旺角新之城',
-      '旺角 Smart Games',
-      '荃金',
-      '大埔李福林',
-      '油麻地金星',
+      '旺角新之城',     
       '旺角金雞',
-      '灣仔金星'
+      '荃灣金星',
+      '佐敦GAMEZONE',
+      '鑽石山鑽荷',
+      '長沙灣龍威',
+      '觀塘觀廣',
+      '觀塘168',
+      '沙田沙龍',
+      '深水埗電子',
+      '天水圍PC',
+      '尖沙嘴RETROCITY',
+      '尖沙嘴新港',
+      '屯門天天',
+      '大埔IGAME',
+      '油麻地金星',
+      '灣仔SG',
+      '西灣河太安樓',      
+      '葵涌碧富',
+      '香港仔珍寶',
     ]
 
     // Song data from database
