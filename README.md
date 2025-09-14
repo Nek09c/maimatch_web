@@ -1,6 +1,7 @@
-# MaiMatch Web
+Link: https://nek09c.github.io/maimatch_web/
 
-A web version of the MaiMatch iOS app with Serial Experiments Lain aesthetic, connecting maimai players across Hong Kong.
+# MaiMatch Web
+Connecting maimai players across Hong Kong.
 
 ## Features
 
