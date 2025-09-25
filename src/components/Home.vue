@@ -84,7 +84,7 @@ export default defineComponent({
     const isFirstVisit = ref(true)
     const totalSongsPlayed = ref(0);
     const totalPosts = ref(0);
-    const arcadeLocations = ref(8);
+    const arcadeLocations = ref(20);
     const recentPosts = ref<RecentPost[]>([]);
 
     const onLoadingComplete = () => {
