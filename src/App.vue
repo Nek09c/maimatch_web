@@ -12,7 +12,7 @@
         <router-link to="/posts" class="cyber-button">昔のマッチ</router-link>
         <router-link to="/locations" class="cyber-button">機舖</router-link>
         <router-link to="/songs" class="cyber-button">歌曲庫</router-link>
-        <router-link to="/study" class="cyber-button">學習模式</router-link>
+        <a href="https://whitenightawa.github.io/hkrgm2/" class="cyber-button" target="_blank" rel="noopener noreferrer">Maimai地圖</a>
         <AudioControl />
         <AuthComponent />
       </nav>
@@ -63,12 +63,6 @@ export default defineComponent({
     };
     
     onMounted(() => {
-      // Set background image after component mounts
-      const backgroundElement = document.querySelector('.background-image') as HTMLElement;
-      if (backgroundElement) {
-        backgroundElement.style.backgroundImage = `url(${getImageUrl('maimatch_bg.JPG')})`;
-      }
-      
       // Initialize authentication
       initializeAuth()
     });
@@ -82,11 +76,11 @@ export default defineComponent({
 @import "./assets/lain-theme.css";
 
 :root {
-  --system-bg: #000000;
-  --system-text: #F2F2F2;
-  --system-accent: #ff00ff;
-  --system-glitch: #00ffff;
-  --system-border: #333333;
+  --system-bg: #f2f2f2; /* light grey */
+  --system-text: #1A1A1A; /* near-black text for contrast */
+  --system-accent: #B0B0B0; /* soft silver accent */
+  --system-glitch: #C0C0C0; /* silver */
+  --system-border: #D9D9D9; /* light silver border */
 }
 
 body {
@@ -105,13 +99,31 @@ body {
   padding: 1rem;
   gap: 1rem;
   position: relative;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 2px
-  );
+  background: #f2f2f2; /* solid light grey */
+  box-shadow: inset 0 0 0 1px rgba(192, 192, 192, 0.35); /* subtle silver lining */
+}
+
+/* minimalistic faint grid overlay */
+.app-container::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.03),
+      rgba(0, 0, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.03),
+      rgba(0, 0, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 24px
+    );
 }
 
 .background-image {
@@ -124,7 +136,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  opacity: 0.35;
+  opacity: 0; /* disable bg overlay */
   z-index: -2;
   pointer-events: none;
 }

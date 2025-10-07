@@ -398,15 +398,7 @@ export default defineComponent({
 }
 
 .cc-character {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 400px;
-  height: 500px;
-  z-index: 1;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  opacity: 0.45;
+  display: none !important;
 }
 
 /* Mobile responsive styles for CC character */
@@ -427,6 +419,18 @@ export default defineComponent({
     bottom: 5px;
     left: 5px;
   }
+}
+
+/* Force all Home page text to black, remove glow */
+.home-container, .home-container * {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+/* Specific elements that previously used accent/glitch colors */
+.glitch, .stat-value, .post-location, .post-title, .post-author, .post-time,
+.stats-container h3, .recent-posts h3, .terminal-text h2, .terminal-text p {
+  color: #000000 !important;
 }
 
 .cc-character:hover {
@@ -461,15 +465,7 @@ export default defineComponent({
 }
 
 .lain-character {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 400px;
-  height: 500px;
-  z-index: 1;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  opacity: 0.45;
+  display: none !important;
 }
 
 /* Mobile responsive styles for Lain character */
