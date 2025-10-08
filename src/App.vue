@@ -148,6 +148,25 @@ body.theme-switching, body.theme-switching * {
     );
 }
 
+/* Dark mode: invert grid lines to white so they remain visible */
+body.dark-mode .app-container::after {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 24px
+    );
+}
+
 .background-image {
   position: fixed;
   top: 0;

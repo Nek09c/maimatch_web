@@ -5,7 +5,7 @@
     <!-- CC Character Image -->
     <div class="cc-character">
       <img 
-        :src="getImageUrl('maimatch_CC.PNG')" 
+        :src="getImageUrl('maimatch.png')" 
         alt="CC Character" 
         class="cc-image"
       />
@@ -398,7 +398,15 @@ export default defineComponent({
 }
 
 .cc-character {
-  display: none !important;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 100px;
+  height: 100px;
+  z-index: 1;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  opacity: 0.25; /* 25% opacity as requested */
 }
 
 /* Mobile responsive styles for CC character */
