@@ -5,7 +5,7 @@
     <!-- CC Character Image -->
     <div class="cc-character">
       <img 
-        :src="getImageUrl('maimatch.png')" 
+        :src="ccImage" 
         alt="CC Character" 
         class="cc-image"
       />
@@ -45,9 +45,9 @@
       </div>
 
       <div class="cyber-box recent-posts">
-        <h3>最近嘅マッチ</h3>
+        <h3>最近嘅MaiMatch</h3>
         <div v-if="recentPosts.length === 0" class="no-recent-posts">
-          <p>過去一個鐘冇新嘅マッチ</p>
+          <p>過去一個鐘冇新嘅MaiMatch</p>
           <p style="font-size: 0.8rem; opacity: 0.7;">遲啲再睇或者開新貼文啦！</p>
         </div>
         <div v-else v-for="post in recentPosts" :key="post.id" class="post-item">
@@ -65,6 +65,7 @@
 import { defineComponent, ref, onMounted, getCurrentInstance } from "vue";
 import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore'
 import LoadingScreen from './LoadingScreen.vue'
+import ccImage from '@/assets/maimatch.png'
 
 interface RecentPost {
   id: string;
@@ -256,7 +257,8 @@ export default defineComponent({
       arcadeLocations,
       recentPosts,
       formatTime,
-      getImageUrl
+      getImageUrl,
+      ccImage
     };
   },
 });
@@ -406,7 +408,7 @@ export default defineComponent({
   z-index: 1;
   pointer-events: none;
   transition: all 0.3s ease;
-  opacity: 0.25; /* 25% opacity as requested */
+  opacity: 0; /* 25% opacity as requested */
 }
 
 /* Mobile responsive styles for CC character */

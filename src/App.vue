@@ -8,8 +8,8 @@
       <h1 class="glitch">MAIMATCH</h1>
       <nav>
         <router-link to="/" class="cyber-button">主頁</router-link>
-        <router-link to="/forum" class="cyber-button">マッチする</router-link>
-        <router-link to="/posts" class="cyber-button">昔のマッチ</router-link>
+        <router-link to="/forum" class="cyber-button">開始MaiMatch</router-link>
+        <router-link to="/posts" class="cyber-button">過往嘅Match</router-link>
         <router-link to="/locations" class="cyber-button">機舖</router-link>
         <router-link to="/songs" class="cyber-button">歌曲庫</router-link>
         <a href="https://whitenightawa.github.io/hkrgm2/" class="cyber-button" target="_blank" rel="noopener noreferrer">Maimai地圖</a>

@@ -6,7 +6,7 @@
       <!-- Authentication check -->
       <div v-if="!isAuthenticated" class="auth-required">
         <p class="glitch">⚠️ 需要登入</p>
-        <p>請用 Google 登入先可以同人マイ マッチ</p>
+        <p>請用 Google 登入先可以同人MaiMatch</p>
       </div>
       
       <div v-else class="user-status">
@@ -91,15 +91,16 @@
         </div>
         
         <div class="form-group">
-          <label for="levelString">SKILL LEVELS (Optional)</label>
-          <input 
-            type="text" 
+          <label for="levelString">SKILL LEVEL (Optional)</label>
+          <select 
             id="levelString"
             v-model="newPost.levelString" 
             :disabled="!isAuthenticated"
-            placeholder="e.g., Master 10-12, Expert 8+"
             class="cyber-input"
-          />
+          >
+            <option value="">SELECT LEVEL</option>
+            <option v-for="lvl in levelOptions" :key="lvl" :value="lvl">{{ lvl }}</option>
+          </select>
         </div>
         
         <div class="form-group">
@@ -251,8 +252,11 @@ export default defineComponent({
     const posts = ref<Post[]>([])
     const loading = ref(true)
     const error = ref<string | null>(null)
+    const levelOptions = [
+      '1+', '2+', '3+', '4+', '5+', '6+', '7+', '8+', '9+', '10+', '11+', '12+', '13+', '14+'
+    ]
     const locations = [
-      '旺角新之城',     
+      '旺角新之城',
       '旺角金雞',
       '荃灣金星',
       '佐敦GAMEZONE',
@@ -545,6 +549,7 @@ export default defineComponent({
       selectedSongGenre,
       selectedSongs,
       filteredSongs,
+      levelOptions,
       clearSelectedSongs,
       removeSong,
       togglePostStatus,
