@@ -423,14 +423,14 @@ export default defineComponent({
 
 /* Force all Home page text to black, remove glow */
 .home-container, .home-container * {
-  color: #000000 !important;
+  color: var(--system-text) !important;
   text-shadow: none !important;
 }
 
 /* Specific elements that previously used accent/glitch colors */
 .glitch, .stat-value, .post-location, .post-title, .post-author, .post-time,
 .stats-container h3, .recent-posts h3, .terminal-text h2, .terminal-text p {
-  color: #000000 !important;
+  color: var(--system-text) !important;
 }
 
 .cc-character:hover {

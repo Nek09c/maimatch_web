@@ -81,6 +81,23 @@ export default defineComponent({
   --system-accent: #B0B0B0; /* soft silver accent */
   --system-glitch: #C0C0C0; /* silver */
   --system-border: #D9D9D9; /* light silver border */
+  /* Map Lain theme tokens to system theme */
+  --lain-text: var(--system-text);
+  --lain-accent: var(--system-accent);
+  --lain-glitch: var(--system-glitch);
+}
+
+/* Dark mode variables */
+body.dark-mode {
+  --system-bg: #101114;
+  --system-text: #FFFFFF;
+  --system-accent: #7f8ea3;
+  --system-glitch: #aab8c7;
+  --system-border: #2a2d33;
+  /* Sync Lain theme tokens for dark mode */
+  --lain-text: var(--system-text);
+  --lain-accent: var(--system-accent);
+  --lain-glitch: var(--system-glitch);
 }
 
 body {
@@ -92,6 +109,11 @@ body {
   padding: 0;
 }
 
+/* During theme switching, disable transitions globally to avoid staggered changes */
+body.theme-switching, body.theme-switching * {
+  transition: none !important;
+}
+
 .app-container {
   min-height: 100vh;
   display: flex;
@@ -99,7 +121,7 @@ body {
   padding: 1rem;
   gap: 1rem;
   position: relative;
-  background: #f2f2f2; /* solid light grey */
+  background: var(--system-bg);
   box-shadow: inset 0 0 0 1px rgba(192, 192, 192, 0.35); /* subtle silver lining */
 }
 
