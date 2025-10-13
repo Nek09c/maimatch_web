@@ -1,7 +1,7 @@
 <template>
   <!-- Loading state -->
   <div v-if="isLoading" class="cyber-box auth-loading">
-    <span class="glitch">AUTHENTICATING...</span>
+    <span class="glitch">認證中...</span>
   </div>
   
   <!-- Error state -->
@@ -11,12 +11,12 @@
   
   <!-- Not authenticated -->
   <button v-if="!isAuthenticated" @click="handleGoogleSignIn" class="cyber-button glitch" :disabled="isLoading">
-    CONNECT (LOGIN)
+    登入
   </button>
   
   <!-- Authenticated - just the disconnect button -->
   <button v-else @click="handleSignOut" class="cyber-button glitch">
-    DISCONNECT (LOGOUT)
+    登出
   </button>
 </template>
 

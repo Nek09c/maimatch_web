@@ -10,7 +10,7 @@
       </div>
       
       <div v-else class="user-status">
-        <p class="posting-as">Default稱呼：<span class="glitch">{{ userDisplayName }}</span></p>
+        <p class="posting-as">Default稱呼: <span class="glitch">{{ userDisplayName }}</span></p>
       </div>
       
       <form @submit.prevent="createPost" class="post-form" :class="{ disabled: !isAuthenticated }">
