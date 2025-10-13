@@ -66,7 +66,7 @@
             v-model="newPost.content" 
             required 
             :disabled="!isAuthenticated"
-            placeholder="講下你想玩咩歌..."
+            placeholder="描述下自己著咩衫/企係邊 令人容易啲認到你..."
             class="cyber-input"
           ></textarea>
         </div>
