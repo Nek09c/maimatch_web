@@ -1,7 +1,7 @@
 <template>
   <div class="forum-container">
     <div class="cyber-box create-post">
-      <h3>コネクト START</h3>
+      <h3>開始MaiMatch！</h3>
       
       <!-- Authentication check -->
       <div v-if="!isAuthenticated" class="auth-required">
@@ -10,12 +10,12 @@
       </div>
       
       <div v-else class="user-status">
-        <p class="posting-as">名前：<span class="glitch">{{ userDisplayName }}</span></p>
+        <p class="posting-as">Default稱呼：<span class="glitch">{{ userDisplayName }}</span></p>
       </div>
       
       <form @submit.prevent="createPost" class="post-form" :class="{ disabled: !isAuthenticated }">
         <div class="form-group">
-          <label for="authorName">顯示名稱（可選）</label>
+          <label for="authorName">稱呼/Maimai名 (可選填, default會係Google名)</label>
           <input
             type="text" 
             id="authorName"
@@ -47,39 +47,26 @@
         </div>
         
         <div class="form-group">
-          <label for="title">標題</label>
-          <input 
-            type="text" 
-            id="title"
-            v-model="newPost.title" 
-            required 
-            :disabled="!isAuthenticated"
-            placeholder="搵人一齊玩..."
-            class="cyber-input"
-          />
-        </div>
-        
-        <div class="form-group">
           <label for="content">內容</label>
           <textarea 
             id="content"
             v-model="newPost.content" 
             required 
             :disabled="!isAuthenticated"
-            placeholder="描述下自己著咩衫/企係邊 令人容易啲認到你..."
+            placeholder="講下目的（想吸多個印仔/單純想打四首歌/想處xxx歌/打段位...） + 描述下自己著咩衫/企係邊 令人容易啲認到你..."
             class="cyber-input"
           ></textarea>
         </div>
         
         <div class="form-group">
-          <label for="genreString">PREFERRED GENRES (Optional)</label>
+          <label for="genreString">最愛嘅類別 (可選填)</label>
           <select 
             id="genreString"
             v-model="newPost.genreString" 
             :disabled="!isAuthenticated"
             class="cyber-input"
           >
-            <option value="">SELECT GENRE</option>
+            <option value="">選擇類別</option>
             <option value="Pop & Anime">Pop & Anime</option>
             <option value="Niconico & Vocaloid">Niconico & Vocaloid</option>
             <option value="東方project">東方project</option>
@@ -91,20 +78,20 @@
         </div>
         
         <div class="form-group">
-          <label for="levelString">SKILL LEVEL (Optional)</label>
+          <label for="levelString">打到咩Level(可選填)</label>
           <select 
             id="levelString"
             v-model="newPost.levelString" 
             :disabled="!isAuthenticated"
             class="cyber-input"
           >
-            <option value="">SELECT LEVEL</option>
+            <option value="">選擇LEVEL</option>
             <option v-for="lvl in levelOptions" :key="lvl" :value="lvl">{{ lvl }}</option>
           </select>
         </div>
         
         <div class="form-group">
-          <label for="songIdsString">SPECIFIC SONGS (Optional)</label>
+          <label for="songIdsString">想指定打嘅歌曲 (可選填)</label>
           <div class="song-selection">
             <select 
               id="songGenre"
@@ -112,7 +99,7 @@
               :disabled="!isAuthenticated"
               class="cyber-input"
             >
-              <option value="">選擇歌曲類型</option>
+              <option value="">選擇歌曲類別</option>
               <option value="popAndAnime">Pop & Anime</option>
               <option value="niconicoAndVocaloid">Niconico & Vocaloid</option>
               <option value="touhou">東方project</option>
@@ -221,6 +208,7 @@ import { getAllSongs } from '@/utils/database'
 interface Post {
   id: string;
   authorName: string;
+  title: string;
   content: string;
   createdAt: any; // Firebase Timestamp
   userId: string; // Google Auth UID
@@ -231,7 +219,7 @@ interface Post {
   levelString: string;
   location: string;
   songIdsString: string;
-  title: string;
+
 }
 
 interface Song {
